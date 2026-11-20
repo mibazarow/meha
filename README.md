@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img alt="version" src="https://img.shields.io/badge/version-1.22.5-2ea043">
+  <img alt="version" src="https://img.shields.io/badge/version-1.23.0-2ea043">
   <img alt="android" src="https://img.shields.io/badge/Android-12%2B-3ddc84">
   <img alt="kotlin" src="https://img.shields.io/badge/Kotlin-Jetpack%20Compose-7f52ff">
   <img alt="tools" src="https://img.shields.io/badge/tools-546-c9a227">
@@ -27,6 +27,39 @@
 <p align="center">
   <img src="docs/screenshots/01-chat.jpg" width="260" alt="Чат с агентом">
 </p>
+
+---
+
+## Скоро: Меха как пульт к HARNES-S
+
+Меха живёт на телефоне, HARNES-S — на Mac. Телефон не всегда рядом с ноутбуком, а спросить
+бывает нужно именно тогда, когда вы уже ушли.
+
+<!-- markdownlint-disable MD033 -->
+<table>
+<tr>
+<td width="220" valign="top"><img src="docs/screenshots/harness-macos.png" alt="HARNES-S — ИИ-агент для macOS"></td>
+<td valign="top">
+
+**HARNES-S** — ИИ-агент для macOS: один чат, одна память, вся машина. Отдельный проект,
+отдельное приложение, [github.com/mibazarow/harnes-s-macos](https://github.com/mibazarow/harnes-s-macos).
+
+Связка сделает телефон **пультом к HARNES-S**, а не второй головой:
+
+- **Статус на ходу.** Ушли с ноутбука — спросили Меху, что там с задачей. Она отвечает тем, что ей передал HARNES-S.
+- **Команды с телефона.** «Продолжай со второго пункта» — и HARNES-S продолжает.
+- **Отдельный закреплённый чат**, в который HARNES-S стримит свой диалог и индикатор размышлений. Просто видно, что он работает, а не молчит.
+- **Обмен фактами в обе стороны.** Поработали день только на телефоне — важное доехало до Mac, и наоборот.
+
+Транспорт — тонкий общий журнал с курсорами, без облачного хранилища: недоступен — обе стороны
+работают дальше и синхронизируются, когда он вернётся.
+
+[**Что такое HARNES-S →**](https://github.com/mibazarow/harnes-s-macos) · [План связки и открытые вопросы →](https://github.com/mibazarow/harnes-s-macos/blob/master/MEHA_HARNESS_DUET.md)
+
+</td>
+</tr>
+</table>
+<!-- markdownlint-enable MD033 -->
 
 ---
 
