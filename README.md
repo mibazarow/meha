@@ -15,7 +15,13 @@
   <img alt="android" src="https://img.shields.io/badge/Android-12%2B-3ddc84">
   <img alt="kotlin" src="https://img.shields.io/badge/Kotlin-Jetpack%20Compose-7f52ff">
   <img alt="tools" src="https://img.shields.io/badge/tools-546-c9a227">
+  <img alt="languages" src="https://img.shields.io/badge/languages-RU%20%7C%20EN-8957e5">
   <img alt="license" src="https://img.shields.io/badge/license-free%20%C2%B7%20non--commercial-blue">
+</p>
+
+<p align="center">
+  <b>Интерфейс — русский или английский, на выбор в настройках.</b><br>
+  На выбранном языке идёт вся работа агента: системный промпт, описания инструментов и ответы.
 </p>
 
 <p align="center">
