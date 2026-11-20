@@ -280,6 +280,16 @@ class AndharnessApplication : Application() {
         pdfBoxInitializer
         crashGuard.install()
         reconcileOverlayAssistant()
+
+        startBackgroundMachinery()
+        launchStartupMaintenance()
+    }
+
+    /**
+     * Starts every long-lived in-process subsystem and the WorkManager jobs they depend on.
+     * Called once from [onCreate], synchronously, in this order.
+     */
+    private fun startBackgroundMachinery() {
         automationTriggerManager.start()
         deviceFactsInvalidationManager.start()
         memoryGcScheduler.start()
@@ -309,6 +319,13 @@ class AndharnessApplication : Application() {
             workManager.cancelUniqueWork(LEGACY_DAILY_DIGEST_EVENING)
             workManager.cancelUniqueWork(LEGACY_DAY_DIGEST_PERIODIC)
         }.onFailure { Log.w(TAG, "Cancelling legacy digest work failed: ${it.message}") }
+    }
+
+    /**
+     * Fire-and-forget startup reconciliation on the IO scope: it must never block or break
+     * `onCreate`, so every step is best-effort and logged on failure.
+     */
+    private fun launchStartupMaintenance() {
         // One-time reclaim of the ORPHANED files of the removed on-device local chat model. The
         // feature is gone, but an in-place update preserves app data, so its weights/projector
         // (`models/meha-qwen3vl-v2-*.gguf`) and KV slots (`slots/`) linger. Deleted once, off the
