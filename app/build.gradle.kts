@@ -23,8 +23,8 @@ android {
         applicationId = "com.andharness.ru"
         minSdk = 31
         targetSdk = 35
-        versionCode = 306
-        versionName = "1.22.5"
+        versionCode = 307
+        versionName = "1.22.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
