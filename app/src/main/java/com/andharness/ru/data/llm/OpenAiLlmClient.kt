@@ -10,6 +10,7 @@ import com.andharness.ru.domain.agent.LlmRequest
 import com.andharness.ru.domain.agent.LlmTool
 import com.andharness.ru.domain.agent.LlmToolCall
 import com.andharness.ru.domain.llm.LlmAuthConfig
+import com.andharness.ru.domain.llm.ToolCallStreamAccumulator
 import com.andharness.ru.domain.llm.openAiChatCompletionsUrl
 import com.andharness.ru.domain.settings.LlmSettings
 import com.andharness.ru.domain.settings.LlmSettingsStore
@@ -108,6 +109,10 @@ class OpenAiLlmClient @Inject constructor(
         // If a provider does not support `reasoning_effort`, it answers 400; we then retry once
         // without the field so the mode setting can never break chatting.
         var skipReasoning = false
+        // `stream_options.include_usage` is how a stream reports real token counts (the same field
+        // opencode sends). Strict servers reject unknown body fields with 400, so the first such
+        // rejection drops this one too and the chat keeps working with the local estimate.
+        var skipStreamOptions = false
         while (attempt < MAX_ATTEMPTS) {
             attempt++
             var shouldRetry = false
@@ -126,6 +131,7 @@ class OpenAiLlmClient @Inject constructor(
                     authConfig = authConfig,
                     request = request,
                     includeReasoning = !skipReasoning,
+                    includeStreamOptions = !skipStreamOptions,
                     model = effectiveModel
                 )
                 val call = httpClient.newCall(req)
@@ -146,7 +152,7 @@ class OpenAiLlmClient @Inject constructor(
                                 return@flow
                             }
 
-                            val toolCallsAccumulator = LinkedHashMap<Int, ToolCallAccumulator>()
+                            val toolCalls = ToolCallStreamAccumulator()
                             var doneEmitted = false
 
                             // No-progress watchdog. OkHttp's readTimeout counts ANY byte, so a
@@ -184,13 +190,18 @@ class OpenAiLlmClient @Inject constructor(
                                 // Provider token accounting. It usually arrives as a usage-only chunk
                                 // with `choices: []`, so it must be read BEFORE the choices guard
                                 // below — otherwise the estimate/actual calibration never sees it.
-                                parseUsage(obj)?.let { emit(it) }
+                                val topLevelUsage = parseUsage(obj)
+                                topLevelUsage?.let { emit(it) }
 
                                 val choices = obj["choices"]
                                 if (choices !is JsonArray) continue
                                 if (choices.isEmpty()) continue
                                 val choice = choices[0]
                                 if (choice !is JsonObject) continue
+
+                                // Moonshot and a few other compatible providers attach usage to the
+                                // choice instead of the chunk, so read it there when the chunk had none.
+                                if (topLevelUsage == null) parseUsage(choice)?.let { emit(it) }
 
                                 val delta = choice["delta"] as? JsonObject ?: JsonObject(emptyMap())
                                 // Reasoning deltas (reasoning_content, DeepSeek-R1 style) are NOT shown
@@ -199,10 +210,13 @@ class OpenAiLlmClient @Inject constructor(
                                 // otherwise be killed by the no-progress watchdog (~1024 s) mid-thought.
                                 // A non-empty reasoning delta therefore refreshes the idle budget, while
                                 // staying invisible to the user.
-                                val reasoningDelta = delta["reasoning_content"] ?: delta["reasoning"]
-                                if (reasoningDelta is JsonPrimitive && reasoningDelta.isString &&
-                                    reasoningDelta.content.isNotEmpty()
-                                ) {
+                                // Reasoning deltas arrive in several dialects: DeepSeek/Qwen use
+                                // `reasoning_content`, OpenRouter and Kimi also use `reasoning` or
+                                // `reasoning_text`, and OpenRouter's `reasoning_details` carries typed
+                                // entries. All of them are progress for the watchdog, none of them is
+                                // the visible answer.
+                                val reasoningText = reasoningTextOf(delta)
+                                if (reasoningText.isNotEmpty()) {
                                     activeWatchdog.noteProgress()
                                     if (!reasoningSignalled) {
                                         reasoningSignalled = true
@@ -216,38 +230,57 @@ class OpenAiLlmClient @Inject constructor(
                                         emittedInAttempt = true
                                     }
                                 }
-
-                                delta["tool_calls"]?.let { toolCalls ->
-                                    if (toolCalls is JsonArray) {
+                                // A safety refusal is a real answer: show it instead of an empty turn.
+                                delta["refusal"]?.let { refusal ->
+                                    if (refusal is JsonPrimitive && refusal.isString && refusal.content.isNotEmpty()) {
                                         activeWatchdog.noteProgress()
-                                        toolCallsLoop@ for (tc in toolCalls) {
-                                            if (tc !is JsonObject) continue@toolCallsLoop
-                                            val index = (tc["index"] as? JsonPrimitive)?.content?.toIntOrNull() ?: continue@toolCallsLoop
-                                            val acc = toolCallsAccumulator.getOrPut(index) { ToolCallAccumulator() }
-                                            (tc["id"] as? JsonPrimitive)?.content?.let { acc.id = it }
-                                            ((tc["function"] as? JsonObject)?.get("name") as? JsonPrimitive)?.content?.let { acc.name = it }
-                                            ((tc["function"] as? JsonObject)?.get("arguments") as? JsonPrimitive)?.content?.let { acc.args.append(it) }
+                                        emit(LlmEvent.Text(refusal.content))
+                                        emittedInAttempt = true
+                                    }
+                                }
+
+                                delta["tool_calls"]?.let { calls ->
+                                    if (calls is JsonArray) {
+                                        activeWatchdog.noteProgress()
+                                        calls.forEachIndexed { position, element ->
+                                            if (element is JsonObject) {
+                                                toolCalls.append(element, position, calls.size)
+                                            }
                                         }
                                     }
                                 }
 
                                 val finishReason = (choice["finish_reason"] as? JsonPrimitive)?.content
                                 when (finishReason) {
-                                    "tool_calls" -> {
-                                        if (flushToolCalls(toolCallsAccumulator) { calls ->
+                                    // The normal tool-call terminator. Some providers send "stop" or
+                                    // "function_call" instead even though the calls are complete, so
+                                    // they finish the same way rather than losing the batch.
+                                    "tool_calls", "function_call", "stop" -> {
+                                        if (flushToolCalls(toolCalls) { calls ->
                                                 emit(LlmEvent.ToolCalls(calls))
                                             }
                                         ) {
                                             emittedInAttempt = true
                                         }
+                                        emit(LlmEvent.Done)
+                                        doneEmitted = true
                                     }
-                                    // Some OpenAI-compatible providers end a tool-call turn with
-                                    // "stop" (or another terminal reason) instead of "tool_calls":
-                                    // flush what was accumulated before finishing so nothing is lost.
-                                    "stop", "length", "content_filter" -> {
-                                        flushToolCalls(toolCallsAccumulator) { calls ->
-                                            emit(LlmEvent.ToolCalls(calls))
-                                            emittedInAttempt = true
+                                    // Truncation or filtering cuts the response mid-call: the arguments
+                                    // collected so far can look like valid JSON while missing the tail,
+                                    // so executing them would perform the WRONG action. Refuse and say
+                                    // so honestly instead of running a half-written call.
+                                    "length", "content_filter" -> {
+                                        if (!toolCalls.isEmpty) {
+                                            toolCalls.clear()
+                                            Log.w(TAG, "LLM: ответ оборван ($finishReason) посреди вызова инструмента; вызов отброшен")
+                                            emit(
+                                                LlmEvent.Error(
+                                                    "Ответ оборван провайдером ($finishReason) посреди вызова " +
+                                                        "инструмента — вызов НЕ выполнен. Повторите запрос.",
+                                                    false,
+                                                )
+                                            )
+                                            return@flow
                                         }
                                         emit(LlmEvent.Done)
                                         doneEmitted = true
@@ -258,7 +291,7 @@ class OpenAiLlmClient @Inject constructor(
                             // Stream ended ([DONE] or EOF) without an explicit terminal reason: flush
                             // any accumulated tool calls and always signal Done, so the caller never
                             // has to treat a silent end as a successful completion.
-                            flushToolCalls(toolCallsAccumulator) { calls ->
+                            flushToolCalls(toolCalls) { calls ->
                                 emit(LlmEvent.ToolCalls(calls))
                                 emittedInAttempt = true
                             }
@@ -292,6 +325,12 @@ class OpenAiLlmClient @Inject constructor(
                             skipReasoning = true
                             shouldRetry = true
                             Log.w(TAG, "LLM: провайдер отклонил reasoning_effort (400); повтор без параметра.")
+                            return@use
+                        } else if (code == 400 && !skipStreamOptions) {
+                            // A strict server rejected `stream_options`; drop it and retry once.
+                            skipStreamOptions = true
+                            shouldRetry = true
+                            Log.w(TAG, "LLM: провайдер отклонил stream_options (400); повтор без параметра.")
                             return@use
                         } else {
                             Log.w(TAG, "LLM error: Ошибка API (${code}): $errorBody (retryable=false)")
@@ -378,26 +417,31 @@ class OpenAiLlmClient @Inject constructor(
      * at least one complete call was emitted (a call missing an id or a name is dropped).
      */
     private suspend fun flushToolCalls(
-        accumulator: LinkedHashMap<Int, ToolCallAccumulator>,
+        accumulator: ToolCallStreamAccumulator,
         sink: suspend (List<LlmToolCall>) -> Unit
     ): Boolean {
-        val calls = accumulator.values.mapNotNull { it.toToolCall() }
-        accumulator.clear()
+        val calls = accumulator.finish()
         if (calls.isEmpty()) return false
         sink(calls)
         return true
     }
 
-    private class ToolCallAccumulator {
-        var id: String? = null
-        var name: String? = null
-        val args = StringBuilder()
-
-        fun toToolCall(): LlmToolCall? {
-            val id = id ?: return null
-            val name = name ?: return null
-            return LlmToolCall(id = id, name = name, arguments = args.toString())
+    /**
+     * The reasoning text carried by one delta, across the dialects OpenAI-compatible providers use:
+     * `reasoning_content` (DeepSeek/Qwen), `reasoning`, `reasoning_text`, and OpenRouter's typed
+     * `reasoning_details` entries. Only a progress signal for the watchdog — never shown to the user.
+     */
+    private fun reasoningTextOf(delta: JsonObject): String {
+        for (field in REASONING_TEXT_FIELDS) {
+            val value = delta[field] as? JsonPrimitive ?: continue
+            if (value.isString && value.content.isNotEmpty()) return value.content
         }
+        val details = delta["reasoning_details"] as? JsonArray ?: return ""
+        return details.firstNotNullOfOrNull { entry ->
+            ((entry as? JsonObject)?.get("text") as? JsonPrimitive)
+                ?.takeIf { it.isString && it.content.isNotEmpty() }
+                ?.content
+        }.orEmpty()
     }
 
     private suspend fun buildRequest(
@@ -406,6 +450,7 @@ class OpenAiLlmClient @Inject constructor(
         authConfig: LlmAuthConfig,
         request: LlmRequest,
         includeReasoning: Boolean,
+        includeStreamOptions: Boolean,
         model: String,
     ): Request {
         val url = openAiChatCompletionsUrl(settings.endpoint)
@@ -430,6 +475,11 @@ class OpenAiLlmClient @Inject constructor(
                 put("reasoning_effort", JsonPrimitive(if (effort == "off") "none" else effort))
             }
             put("stream", true)
+            if (includeStreamOptions) {
+                // Ask for the real prompt/completion token counts on the final chunk; without this
+                // most providers send no `usage` at all and the local estimate stays unverified.
+                putJsonObject("stream_options") { put("include_usage", true) }
+            }
         }
         val requestBody = body.toString()
             .toRequestBody("application/json".toMediaType())
@@ -513,6 +563,8 @@ class OpenAiLlmClient @Inject constructor(
     companion object {
         private const val TAG = "Andharness"
         private const val MAX_ATTEMPTS = 4
+        /** Fields an OpenAI-compatible provider may use to stream reasoning text. */
+        private val REASONING_TEXT_FIELDS = listOf("reasoning_content", "reasoning", "reasoning_text")
         private const val BASE_BACKOFF_MILLIS = 500L
     }
 }

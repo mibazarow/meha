@@ -491,4 +491,170 @@ class OpenAiLlmClientTest {
             server.shutdown()
         }
     }
+
+    /**
+     * Compatible providers may omit `tool_calls[].index`. Such a fragment used to be dropped, so the
+     * model "called" a tool and nothing ran; it must reach the caller like any other call.
+     */
+    @Test
+    fun executesAToolCallWhoseIndexIsMissing() = runBlocking {
+        val stream = """
+            data: {"id":"1","choices":[{"delta":{"tool_calls":[{"id":"call_x","type":"function","function":{"name":"files_list","arguments":"{\"path\":\"/\"}"}}]},"finish_reason":null}]}
+
+            data: {"id":"1","choices":[{"delta":{},"finish_reason":"tool_calls"}]}
+
+            data: [DONE]
+        """.trimIndent()
+        val server = MockWebServer()
+        server.start()
+        server.enqueue(MockResponse().setBody(stream).addHeader("Content-Type", "text/event-stream"))
+
+        try {
+            val client = OpenAiLlmClient(
+                FakeLlmSettingsStore(
+                    config = flowOf(LlmSettings(endpoint = server.url("/v1").toString(), model = "test-model"))
+                ),
+                OkHttpClient.Builder().build(),
+            )
+
+            val events = client.complete(LlmRequest(messages = listOf(LlmMessage("user", "hi")))).toList()
+
+            val calls = events.filterIsInstance<LlmEvent.ToolCalls>().single().calls
+            assertEquals("files_list", calls.single().name)
+            assertEquals("""{"path":"/"}""", calls.single().arguments)
+        } finally {
+            server.shutdown()
+        }
+    }
+
+    /** A safety refusal is a real answer and must reach the user instead of an empty turn. */
+    @Test
+    fun emitsARefusalAsVisibleText() = runBlocking {
+        val stream = """
+            data: {"id":"1","choices":[{"delta":{"refusal":"Не могу помочь с этим."},"finish_reason":null}]}
+
+            data: {"id":"1","choices":[{"delta":{},"finish_reason":"stop"}]}
+
+            data: [DONE]
+        """.trimIndent()
+        val server = MockWebServer()
+        server.start()
+        server.enqueue(MockResponse().setBody(stream).addHeader("Content-Type", "text/event-stream"))
+
+        try {
+            val client = OpenAiLlmClient(
+                FakeLlmSettingsStore(
+                    config = flowOf(LlmSettings(endpoint = server.url("/v1").toString(), model = "test-model"))
+                ),
+                OkHttpClient.Builder().build(),
+            )
+
+            val events = client.complete(LlmRequest(messages = listOf(LlmMessage("user", "hi")))).toList()
+
+            assertTrue(events.contains(LlmEvent.Text("Не могу помочь с этим.")))
+        } finally {
+            server.shutdown()
+        }
+    }
+
+    /**
+     * Truncation cuts the response mid-call, so the collected arguments can be a valid-looking
+     * prefix of a different value. The batch must not execute, and the failure must be reported.
+     */
+    @Test
+    fun dropsATruncatedToolCallAndReportsItHonestly() = runBlocking {
+        val stream = """
+            data: {"id":"1","choices":[{"delta":{"tool_calls":[{"index":0,"id":"c1","type":"function","function":{"name":"files_write","arguments":"{\"path\":\"/sdcard/a"}}]},"finish_reason":null}]}
+
+            data: {"id":"1","choices":[{"delta":{},"finish_reason":"length"}]}
+
+            data: [DONE]
+        """.trimIndent()
+        val server = MockWebServer()
+        server.start()
+        server.enqueue(MockResponse().setBody(stream).addHeader("Content-Type", "text/event-stream"))
+
+        try {
+            val client = OpenAiLlmClient(
+                FakeLlmSettingsStore(
+                    config = flowOf(LlmSettings(endpoint = server.url("/v1").toString(), model = "test-model"))
+                ),
+                OkHttpClient.Builder().build(),
+            )
+
+            val events = client.complete(LlmRequest(messages = listOf(LlmMessage("user", "hi")))).toList()
+
+            assertTrue(
+                "a truncated call must never reach the tool registry",
+                events.filterIsInstance<LlmEvent.ToolCalls>().isEmpty()
+            )
+            val error = events.filterIsInstance<LlmEvent.Error>().single()
+            assertTrue("the reason must name the truncation", error.message.contains("length"))
+            assertFalse("a truncated call must not be retried blindly", error.retryable)
+        } finally {
+            server.shutdown()
+        }
+    }
+
+    /** Moonshot and friends attach usage to the choice instead of the chunk. */
+    @Test
+    fun readsUsageAttachedToTheChoice() = runBlocking {
+        val stream = """
+            data: {"id":"1","choices":[{"delta":{"content":"ok"},"finish_reason":"stop","usage":{"prompt_tokens":77,"completion_tokens":3}}]}
+
+            data: [DONE]
+        """.trimIndent()
+        val server = MockWebServer()
+        server.start()
+        server.enqueue(MockResponse().setBody(stream).addHeader("Content-Type", "text/event-stream"))
+
+        try {
+            val client = OpenAiLlmClient(
+                FakeLlmSettingsStore(
+                    config = flowOf(LlmSettings(endpoint = server.url("/v1").toString(), model = "test-model"))
+                ),
+                OkHttpClient.Builder().build(),
+            )
+
+            val events = client.complete(LlmRequest(messages = listOf(LlmMessage("user", "hi")))).toList()
+
+            val usage = events.filterIsInstance<LlmEvent.Usage>().single()
+            assertEquals(77L, usage.promptTokens)
+            assertEquals(3L, usage.completionTokens)
+        } finally {
+            server.shutdown()
+        }
+    }
+
+    /** Real token counts only arrive when the request opts in via `stream_options`. */
+    @Test
+    fun requestsUsageWithStreamOptions() = runBlocking {
+        val stream = """
+            data: {"id":"1","choices":[{"delta":{"content":"ok"},"finish_reason":"stop"}]}
+
+            data: [DONE]
+        """.trimIndent()
+        val server = MockWebServer()
+        server.start()
+        server.enqueue(MockResponse().setBody(stream).addHeader("Content-Type", "text/event-stream"))
+
+        try {
+            val client = OpenAiLlmClient(
+                FakeLlmSettingsStore(
+                    config = flowOf(LlmSettings(endpoint = server.url("/v1").toString(), model = "test-model"))
+                ),
+                OkHttpClient.Builder().build(),
+            )
+
+            client.complete(LlmRequest(messages = listOf(LlmMessage("user", "hi")))).toList()
+
+            val body = server.takeRequest().body.readUtf8()
+            assertTrue(
+                "the request must ask the provider for real token counts",
+                body.contains("\"stream_options\":{\"include_usage\":true}")
+            )
+        } finally {
+            server.shutdown()
+        }
+    }
 }
