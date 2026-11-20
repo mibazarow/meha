@@ -31,19 +31,7 @@ object TranscriptSemanticRanker {
         query: FloatArray,
         candidates: List<Pair<Long, FloatArray>>,
         limit: Int,
-    ): List<Pair<Long, Float>> {
-        if (limit <= 0 || query.isEmpty() || candidates.isEmpty()) return emptyList()
-        return candidates
-            .mapNotNull { (id, vector) ->
-                val cosine = TextRetriever.cosine(query, vector)
-                if (cosine.isFinite() && cosine > 0.0) id to cosine.toFloat() else null
-            }
-            .sortedWith(
-                compareByDescending<Pair<Long, Float>> { it.second }
-                    .thenBy { it.first }
-            )
-            .take(limit)
-    }
+    ): List<Pair<Long, Float>> = TextRetriever.rankByCosine(query, candidates, limit)
 
     /**
      * Deduplicates and orders transcript candidates coming from the two independent sources:

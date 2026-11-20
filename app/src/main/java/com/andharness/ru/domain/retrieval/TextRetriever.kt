@@ -140,6 +140,29 @@ object TextRetriever {
     }
 
     /**
+     * The best [limit] `(id, cosine)` pairs, highest first, ties broken by ascending id so the same
+     * inputs always give the same order. Only finite, strictly positive cosines are hits: a zero or
+     * negative similarity is not a match. Shared by the transcript and message semantic rankers.
+     */
+    fun rankByCosine(
+        query: FloatArray,
+        candidates: List<Pair<Long, FloatArray>>,
+        limit: Int,
+    ): List<Pair<Long, Float>> {
+        if (limit <= 0 || query.isEmpty() || candidates.isEmpty()) return emptyList()
+        return candidates
+            .mapNotNull { (id, vector) ->
+                val c = cosine(query, vector)
+                if (c.isFinite() && c > 0.0) id to c.toFloat() else null
+            }
+            .sortedWith(
+                compareByDescending<Pair<Long, Float>> { it.second }
+                    .thenBy { it.first }
+            )
+            .take(limit)
+    }
+
+    /**
      * Fuses a lexical ranking with embedding similarity: `lexicalWeight * lexicalScore +
      * embeddingWeight * cosine`. [queryVector] and [docVectors] are keyed by [Hit.id]; whenever the
      * query vector is null (e.g. [NoOpEmbedder]) OR a document has no vector, the lexical order is
