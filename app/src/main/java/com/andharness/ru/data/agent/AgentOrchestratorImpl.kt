@@ -25,6 +25,7 @@ import com.andharness.ru.domain.agent.LlmRequest
 import com.andharness.ru.domain.agent.LoopGuard
 import com.andharness.ru.domain.agent.PromptTokenCalibration
 import com.andharness.ru.domain.agent.RepeatCallDetector
+import com.andharness.ru.domain.agent.TextToolCallParser
 import com.andharness.ru.domain.agent.NoAttemptGuard
 import com.andharness.ru.domain.agent.LlmTool
 import com.andharness.ru.domain.agent.LlmToolCall
@@ -922,6 +923,25 @@ class AgentOrchestratorImpl @Inject constructor(
                 errorMsg = "Поток ответа завершился неожиданно (без сигнала завершения) — возможно, ответ неполный. Повторите запрос."
             }
             persistStreamingText(force = true)
+
+            // Some OpenAI-compatible models write the tool call as TEXT markup instead of a native
+            // `tool_calls` delta (`<tool_call><function=device_facts_list></function></tool_call>`).
+            // Recover it as a real call so the action actually runs, and drop the markup from the
+            // answer — otherwise the user sees the raw tag in the chat and nothing happens.
+            val rawAnswer = sb.toString()
+            if (pendingToolCalls.isEmpty()) {
+                pendingToolCalls = TextToolCallParser.parse(rawAnswer)
+                if (pendingToolCalls.isNotEmpty()) {
+                    Log.w(TAG, "Recovered ${pendingToolCalls.size} tool call(s) written as text markup")
+                }
+            }
+            val withoutMarkup = TextToolCallParser.remove(rawAnswer)
+            if (withoutMarkup != rawAnswer) {
+                sb.setLength(0)
+                sb.append(withoutMarkup)
+                // The guards below read the streamed text, so they must see the answer the user sees.
+                lastStreamedText = withoutMarkup
+            }
 
             if (errorMsg != null) {
                 Log.e(TAG, "Agent run error: $errorMsg")

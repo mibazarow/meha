@@ -112,6 +112,9 @@ object AssistantTextSanitizer {
         if (raw.isEmpty()) return raw
         var text = raw
         text = REASONING_BLOCK.replace(text, "")
+        // Tool calls written as text markup are executed by the orchestrator, never shown: the
+        // answer must not contain `<tool_call>…</tool_call>` (see TextToolCallParser).
+        text = TextToolCallParser.remove(text)
         text = LABELLED_MARKER_LINE.replace(text, "")
         text = BRACKET_MARKER_LINE.replace(text, "")
         text = TOOL_PLANNING_LINE.replace(text, "")

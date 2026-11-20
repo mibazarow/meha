@@ -152,4 +152,18 @@ class AssistantTextSanitizerTest {
             )
         )
     }
+
+    @Test
+    fun removesToolCallMarkupFromTheVisibleAnswer() {
+        assertEquals(
+            "Проверяю.",
+            AssistantTextSanitizer.sanitize(
+                "Проверяю.\n<tool_call> <function=device_facts_list> </tool_call>"
+            )
+        )
+        assertEquals(
+            "Проверяю.",
+            AssistantTextSanitizer.sanitizeRealtime("Проверяю.<tool_call> <function=dev")
+        )
+    }
 }
