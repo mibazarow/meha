@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-build-only manifest overlay: registers the ADB smoke harness receiver so the DEBUG_TOOL
+  and DEBUG_DB_COUNTS actions can be exercised on a device without an LLM. Merged into debug
+  builds only; never into release.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!--
+          android:permission="android.permission.DUMP" gates who may send to this exported receiver.
+          DUMP is signature|privileged and "not for use by third-party applications", so ordinary
+          co-installed apps cannot reach the bridge, while the ADB shell user (uid 2000), which holds
+          DUMP, keeps working: `adb shell am broadcast -n com.andharness.ru/.debug.DebugToolReceiver`.
+          https://developer.android.com/guide/topics/manifest/receiver-element#permission
+        -->
+        <receiver
+            android:name=".debug.DebugToolReceiver"
+            android:permission="android.permission.DUMP"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.andharness.ru.DEBUG_TOOL" />
+                <action android:name="com.andharness.ru.DEBUG_DB_COUNTS" />
+                <action android:name="com.andharness.ru.DEBUG_SEED_CHAT" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

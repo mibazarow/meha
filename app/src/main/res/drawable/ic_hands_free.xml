@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hands-free voice-mode glyph (D5): Material Symbols `graphic_eq`, shown in the chat top bar. It
+     stands for "the assistant talks and listens", distinct from the composer mic. Tinted by the
+     caller, so the shape must not rely on colour. Android vectors —
+     https://developer.android.com/develop/ui/views/graphics/vector-drawable-resources -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M3,11h2v2H3zM7,9h2v6H7zM11,6h2v12h-2zM15,9h2v6h-2zM19,11h2v2h-2z" />
+</vector>

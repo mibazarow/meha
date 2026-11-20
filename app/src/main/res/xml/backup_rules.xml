@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Auto Backup rules for Android 11 and below (API <= 30), applied via android:fullBackupContent.
+  On API 31+ data_extraction_rules.xml is used instead.
+
+  Scope is deliberately minimal and additive (update.md idea #8): only a handful of non-secret
+  preference files are backed up, so a reinstall restores "basics". A backup never contains secrets:
+  the API key and the SSH passwords/passphrases live in Keystore-backed EncryptedSharedPreferences
+  (keystore keys are not backed up anyway, so restoring those files would be useless and unsafe).
+
+  Because at least one <include> element is present, the system backs up ONLY the files explicitly
+  included below; every other path is excluded by default. Declaring <exclude> elements for those
+  other paths is therefore redundant, and lint rejects an <exclude> that is not nested inside a
+  matching <include> ("is not in an included path"). The paths that must never be backed up are
+  documented here instead of declared as <exclude>:
+    sharedpref: andharness_ssh_secrets.xml, andharness_ssh_known_hosts.xml,
+                andharness_encrypted_prefs.xml, andharness_db_encryption.xml,
+                andharness_osint.xml, andharness_intercept.xml;
+    database/ and file/ entirely.
+
+  Reference: https://developer.android.com/identity/data/autobackup#IncludingFiles
+-->
+<full-backup-content>
+    <!-- Basics: interface preferences, watchdog mode, vision settings, index config -->
+    <include domain="sharedpref" path="andharness_model_context.xml" />
+    <include domain="sharedpref" path="andharness_watchdog.xml" />
+    <include domain="sharedpref" path="andharness_vision.xml" />
+    <include domain="sharedpref" path="andharness_person_index.xml" />
+</full-backup-content>

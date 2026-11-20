@@ -1,0 +1,81 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+captures/
+
+# Local configuration
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+.DS_Store
+
+# Local APK archive of past releases — never part of the source repository
+releases_backup/
+
+# Signing / secrets
+*.jks
+*.keystore
+keystore.properties
+local.properties
+# The release keystore, its passwords and keystore.md must NEVER be committed: the repository is
+# being prepared for publication on GitHub. They live on the owner's machine only.
+keystore.md
+
+# Environment / dotenv secrets
+.env
+.env.*
+!.env.example
+.server_access.env
+create-local-llm/.server_access.env
+
+# Keys / certificates
+*.pem
+*.p12
+*.pfx
+*.cer
+
+# Credentials / secrets files
+secrets.*
+*credentials*
+*credential*
+
+# Misc
+*.log
+.cxx/
+.kotlin/
+
+# Stray screenshots / exported images at repo root
+/*.png
+/*.jpg
+/*.jpeg
+# ...but keep the app-icon source
+!/new_ico.png
+
+# Local tooling artifacts
+.playwright-mcp/
+
+# Bundled on-device model (large binary; fetch with scripts/fetch-model.sh)
+app/src/main/assets/models/*.gguf
+
+# create-local-llm: keep the build/ placeholder, ignore generated artifacts (tools.json/GGUF)
+!create-local-llm/build/
+create-local-llm/build/*
+!create-local-llm/build/.gitkeep
+
+# Python (create-local-llm training scripts)
+__pycache__/
+*.pyc
+
+# Real exported chat history pulled off-device (PRIVACY: never commit real chat text or titles)
+create-local-llm/data/raw_chats/
+
+# Generated fine-tune dataset (large + regenerable): keep the generator + reports, not the raw rows
+create-local-llm/data/train.jsonl
+create-local-llm/data/val.jsonl
+create-local-llm/data/eval/
+
+# Real phone screenshots for the vision training set (PRIVACY: may contain personal content)
+create-local-llm/data/vision/

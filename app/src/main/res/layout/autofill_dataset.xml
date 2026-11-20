@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One-line presentation for a single autofill suggestion (backlog #15). It is inflated by the
+  system UI through RemoteViews, so it must stay a plain TextView with no custom views.
+  https://developer.android.com/reference/android/widget/RemoteViews
+-->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/autofill_dataset_text"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:paddingStart="16dp"
+    android:paddingTop="12dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="12dp"
+    android:textColor="?android:attr/textColorPrimary"
+    android:textSize="16sp" />

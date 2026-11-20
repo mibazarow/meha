@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Preview-only background: the dark-scheme surface (#09100A) rounded like the widget card.
+     Static mock for the picker; not used at runtime. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#09100A" />
+    <corners android:radius="20dp" />
+</shape>

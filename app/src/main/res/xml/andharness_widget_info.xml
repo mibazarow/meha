@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AppWidgetProviderInfo for the Glance home-screen widget (update.md idea #10).
+
+     Glance has no XML layout of its own, but `initialLayout` is still mandatory: the predefined
+     loading layout shipped with glance-appwidget is used until the first composition renders.
+     https://developer.android.com/develop/ui/compose/glance/create-app-widget
+
+     `previewLayout` (API 31+) shows a faithful static mock in the widget picker instead of the
+     generic Glance loading image; the mock mirrors the real dark-theme composition.
+     maxResizeHeight is tall enough for the full five-row list.
+
+     Sizing is driven by `SizeMode.Exact` in AndharnessWidget, so `LocalSize` in the composition is the
+     real bound size (default 3x2 ≈ 223dp -> four rows); the declared `minHeight` is only the framework
+     minimum and no longer decides the row count. `updatePeriodMillis` is set to the platform minimum
+     (30 min) as a bounded fallback refresh for when the app process is not running.
+     https://developer.android.com/develop/ui/views/appwidgets/advanced#update-period -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="2"
+    android:maxResizeWidth="360dp"
+    android:maxResizeHeight="320dp"
+    android:updatePeriodMillis="1800000"
+    android:description="@string/widget_description"
+    android:initialLayout="@layout/glance_default_loading_layout"
+    android:previewLayout="@layout/andharness_widget_preview"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />

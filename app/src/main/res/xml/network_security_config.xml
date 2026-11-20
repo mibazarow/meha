@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Network Security Configuration (developer.android.com):
+    https://developer.android.com/privacy-and-security/security-config
+
+    Policy (SPEC.md §9.4/§20): external endpoints MUST use HTTPS; cleartext HTTP is
+    permitted ONLY for the on-device local LLM server (loopback) — 127.0.0.1,
+    localhost and the Android-emulator host alias 10.0.2.2. Every other destination
+    (base-config) is HTTPS-only, so a stray/intercepted http:// external URL is
+    refused by the platform instead of being sent in the clear.
+-->
+<network-security-config>
+    <!-- App-wide default: no cleartext, anywhere not listed below. -->
+    <base-config cleartextTrafficPermitted="false" />
+
+    <!-- Loopback-only cleartext for the bundled llama.cpp server (http://127.0.0.1:8080). -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">127.0.0.1</domain>
+        <domain includeSubdomains="false">localhost</domain>
+        <!-- 10.0.2.2 is the emulator's alias for the host loopback (developer.android.com). -->
+        <domain includeSubdomains="false">10.0.2.2</domain>
+    </domain-config>
+</network-security-config>

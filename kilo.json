@@ -1,0 +1,11 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "snapshot": false,
+  "mcp": {
+    "design": {
+      "type": "remote",
+      "url": "https://design.googleapis.com/mcp",
+      "enabled": true
+    }
+  }
+}

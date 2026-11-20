@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Preview-only CTA background: brand green primary (#22C55E) with 16dp corners, matching
+     the «Новый чат» pill (dark-scheme primary). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#22C55E" />
+    <corners android:radius="16dp" />
+</shape>

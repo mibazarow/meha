@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  English (values-en) translations for the NEW localization-foundation UI only. The rest of the app
+  is still Russian-only (extraction of the hardcoded UI strings is a separate, later effort), so any
+  string missing here falls back to the Russian base `values/strings.xml`.
+
+  The language names («Русский» / «English») are a language's own name and are the same in every
+  locale on purpose, so they are not translated.
+-->
+<resources>
+    <string name="language_russian">Русский</string>
+    <string name="language_english">English</string>
+
+    <!-- Settings: «Language» section -->
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_label">Interface language</string>
+
+    <!-- Onboarding: extra-download notice, shown right above the final CTA -->
+    <string name="onboarding_download_notice_label">Download</string>
+    <string name="onboarding_download_notice">After installation, about 1 GB of models will be downloaded for offline features (on-device semantic search; speech recognition). Better over Wi-Fi.</string>
+
+    <!-- ============================ Settings screens (unified style) ============================ -->
+
+    <!-- Common actions/labels shared across Settings sections -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_delete">Delete</string>
+    <string name="settings_retry">Retry</string>
+    <string name="settings_delete_model">Delete model</string>
+    <string name="settings_download_model">Download model</string>
+    <string name="settings_model_downloading">Downloading model… %1$d%% (%2$s of %3$s)</string>
+    <string name="settings_model_verifying">Verifying file…</string>
+    <string name="settings_model_failed">Failed to download the model: %1$s</string>
+
+    <!-- Appearance -->
+    <string name="settings_theme_title">Appearance</string>
+    <string name="settings_theme_label">Theme</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_system">System default</string>
+    <string name="settings_theme_hint">Light always uses the light appearance, dark always the dark one; \"System default\" follows the Android setting.</string>
+
+    <!-- Search (semantic) -->
+    <string name="settings_search_title">Search</string>
+    <string name="settings_semantic_label">Semantic search (embeddings)</string>
+    <string name="settings_semantic_hint">Searches by meaning, not just words: it runs on the device and drains the battery. Turn it off to lighten the load, but memory search then falls back to word matching.</string>
+    <string name="settings_style_title">Communication style</string>
+    <string name="settings_style_hint">Meha gradually picks up your manner of speech — address, answer length, slang and emotionality. It only affects form, never facts or actions.</string>
+    <string name="settings_style_mode_auto">Mirror</string>
+    <string name="settings_style_mode_neutral">Neutral</string>
+    <string name="settings_style_mode_manual">Manual</string>
+    <string name="settings_style_manual_label">How to talk</string>
+    <string name="settings_style_manual_save">Save</string>
+    <string name="settings_style_profanity_title">Strong language</string>
+    <string name="settings_style_profanity_hint">Mirror it only if you use it yourself. Never insults or aggression.</string>
+    <string name="settings_style_tone">Tone: %1$s</string>
+    <string name="settings_style_learned">Current: %1$s</string>
+    <string name="settings_style_no_data">Not enough data yet — just chat as usual.</string>
+    <string name="settings_style_samples">Based on %1$d messages</string>
+    <string name="settings_style_forget">Forget style</string>
+    <string name="settings_style_address_ty">informal</string>
+    <string name="settings_style_address_vy">formal</string>
+    <string name="settings_style_brevity">short</string>
+    <string name="settings_style_slang">some slang</string>
+    <string name="settings_style_profanity">strong language</string>
+    <string name="settings_style_emoji">emoji</string>
+    <string name="settings_style_punctuation">relaxed punctuation</string>
+    <string name="settings_style_directness">straight to the point</string>
+    <string name="settings_style_humor">light irony</string>
+
+    <!-- Incoming SMS -->
+    <string name="settings_sms_title">Incoming SMS</string>
+    <string name="settings_sms_label">Handle incoming SMS</string>
+    <string name="settings_sms_hint">The app reads incoming SMS to react to them: it parses the sender\'s number and starts a chat for unknown numbers. This is the shared event-interception switch (SMS and calls). Requires the \"SMS\" permission on the \"All permissions\" screen.</string>
+
+    <!-- Communications -->
+    <string name="settings_comm_title">Communications</string>
+    <string name="settings_comm_mode_label">Recording processing and transcription</string>
+    <string name="settings_comm_mode_off">Off</string>
+    <string name="settings_comm_mode_charging">While charging</string>
+    <string name="settings_comm_mode_always">Always</string>
+    <string name="settings_comm_mode_hint">When the app may automatically scan dictaphone recordings and audio files and transcribe them on the device. Default: only while charging — on-device transcription uses the battery, so it does not run in the background without power. Android does not allow recording phone calls — that is not available.</string>
+    <string name="settings_comm_cloud_label">Send transcript text to the cloud</string>
+    <string name="settings_comm_cloud_hint">Audio never leaves the device; only text may go to the cloud. Turn this off for a fully local mode: then no cloud summaries are built and transcript search runs only on the phone.</string>
+    <string name="settings_comm_whisper_label">Speech recognition model</string>
+    <string name="settings_whisper_base">Whisper base (multilingual)</string>
+    <string name="settings_whisper_small">Whisper small (multilingual)</string>
+    <string name="settings_comm_whisper_desc">%1$s, size %2$s. Downloaded once, then works offline.</string>
+    <string name="settings_comm_downloaded">Model downloaded.</string>
+    <string name="settings_comm_keep_audio_days">Keep audio, days</string>
+    <string name="settings_comm_cache_limit">Audio cache limit, MB</string>
+    <string name="settings_comm_retention_hint">Audio is kept for a limited time and evicted by the cache limit; transcripts (text) stay in the local database.</string>
+    <string name="settings_comm_bg_minutes">Background transcription, min/day</string>
+    <string name="settings_comm_bg_minutes_hint">How many minutes per day the background pass may spend transcribing dictaphone recordings and audio files. Once the limit is used up, processing stops until the next day.</string>
+    <string name="settings_comm_privacy">Privacy and law. Android does not allow recording phone calls — that is not available. On-device audio transcription: dictaphone recordings and audio files; messenger voice messages (by capturing sound with your confirmation); dictation in chat. Requires a downloaded recognition model. There is no always-on (ambient) listening. Recording conversations is regulated by law: in many countries and regions you may record a conversation only with the consent of all participants or after notifying them. Make sure you do not break local rules.</string>
+
+    <!-- Overlay assistant -->
+    <string name="settings_overlay_title">Floating assistant</string>
+    <string name="settings_overlay_label">Bubble over other apps</string>
+    <string name="settings_overlay_hint">Shows a small draggable bubble over other apps: tap it to ask Meha without leaving your current screen. Long-press removes the bubble. This requires the \"Display over other apps\" permission (SYSTEM_ALERT_WINDOW) — the app shows the window only after you grant it in system settings.</string>
+    <string name="settings_overlay_granted">The \"Display over other apps\" permission is granted.</string>
+    <string name="settings_overlay_not_granted">The \"Display over other apps\" permission is not granted.</string>
+
+    <!-- Overlay assistant UI (bubble + quick-ask panel) -->
+    <string name="overlay_bubble_cd">Meha floating assistant</string>
+    <string name="overlay_bubble_glyph">M</string>
+    <string name="overlay_quick_ask_title">Ask Meha</string>
+    <string name="overlay_quick_ask_close_cd">Hide the assistant</string>
+    <string name="overlay_quick_ask_label">Question or task</string>
+    <string name="overlay_quick_ask_send">Send</string>
+    <string name="overlay_quick_ask_sending">Sending…</string>
+
+    <!-- Special access -->
+    <string name="settings_special_title">Access</string>
+    <string name="settings_permissions_btn">All permissions</string>
+    <string name="settings_special_access_hint">Here you can pre-grant Meha all permissions to control the phone. If you don\'t grant them now, permissions are requested as needed.</string>
+
+    <!-- Updates -->
+    <string name="settings_updates_title">Updates</string>
+    <string name="settings_updates_check">Check for updates</string>
+    <string name="settings_updates_checking">Checking…</string>
+    <string name="settings_updates_downloading">Downloading update…</string>
+    <string name="settings_updates_ready">Update ready to install</string>
+    <string name="settings_updates_version">Version %1$s (%2$d)</string>
+
+    <!-- Form actions -->
+    <string name="settings_save_saving">Saving…</string>
+    <string name="settings_save_saved">Saved</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_reset_button">Reset all data</string>
+    <string name="settings_reset_dialog_title">Reset all data</string>
+    <string name="settings_reset_dialog_text">Delete all chats and reset the LLM settings?</string>
+    <string name="settings_reset_confirm">Reset</string>
+
+    <!-- Navigation -->
+    <string name="settings_nav_title">Navigation</string>
+    <string name="settings_nav_row_title">Sections</string>
+    <string name="settings_nav_row_subtitle">Memory, skills, communications and more</string>
+
+    <!-- Provider connection screen -->
+    <string name="provider_title">Providers</string>
+    <string name="provider_intro">Save any number of OpenAI-compatible providers — cloud or self-hosted. Exactly one can be active: pick it in the list and Meha will use it.</string>
+    <string name="provider_saved_title">Saved providers</string>
+    <string name="provider_saved_empty">No saved providers yet. Fill in the form below and tap \"Save\".</string>
+    <string name="provider_add">Add provider</string>
+    <string name="provider_name_label">Name (optional)</string>
+    <string name="provider_name_placeholder">e.g. DeepSeek</string>
+    <string name="provider_badge_active">active</string>
+    <string name="provider_badge_editing">editing</string>
+    <string name="provider_badge_active_editing">active · editing</string>
+    <string name="provider_unnamed">Untitled</string>
+    <string name="provider_delete">Delete provider</string>
+    <string name="provider_delete_dialog_title">Delete provider</string>
+    <string name="provider_delete_dialog_text">Delete \"%1$s\"? Its API key will also be removed from this device.</string>
+
+    <!-- LLM connection -->
+    <string name="settings_llm_title">Connection (LLM)</string>
+    <string name="settings_llm_endpoint">Endpoint URL</string>
+    <string name="settings_llm_apikey_label">API key</string>
+    <string name="settings_llm_apikey_hint">The key is sent only in requests to your provider (Authorization: Bearer …). Leave the field empty for a self-hosted server without a key.</string>
+    <string name="settings_llm_delete_key">Delete key</string>
+    <string name="settings_llm_auth_style">Authorization method</string>
+    <string name="settings_llm_auth_bearer">Bearer (default)</string>
+    <string name="settings_llm_auth_header">Custom header</string>
+    <string name="settings_llm_auth_query">Query parameter</string>
+    <string name="settings_llm_auth_none">No authorization</string>
+    <string name="settings_llm_header_name">Header name</string>
+    <string name="settings_llm_query_name">Query parameter name</string>
+    <string name="settings_llm_model_name">Model name</string>
+    <string name="settings_llm_models_list">Model list</string>
+    <string name="settings_llm_loading">Loading…</string>
+    <string name="settings_llm_refresh">Refresh list</string>
+    <string name="settings_llm_hint_fill">Enter the endpoint and API key (if needed), then tap \"Refresh list\".</string>
+    <string name="settings_llm_models_unavailable">The model list is unavailable — enter the name manually.</string>
+    <string name="settings_context_unknown">unknown</string>
+    <string name="settings_tokens_value">%1$d tokens</string>
+    <string name="settings_llm_context_plain">Model context: %1$s</string>
+    <string name="settings_llm_context_reported">The provider reports a maximum context of %1$d tokens. We use it fully; auto-compact at 80%% (%2$d).</string>
+    <string name="settings_llm_context_not_reported">The provider didn\'t report a maximum context — using %1$d tokens (auto-compact at 80%%: %2$d).</string>
+    <string name="settings_llm_max_context_label">Maximum context, tokens</string>
+    <string name="settings_llm_max_context_known">Up to %1$d tokens (model maximum)</string>
+    <string name="settings_llm_max_context_auto">Auto-detected; leave empty</string>
+    <string name="settings_llm_context_manual_hint">Providers report the max context window in different fields — we can\'t cover them all. If you\'re sure your provider offers more (or less), enter the value yourself. If it can\'t be determined — 100 000 tokens are used.</string>
+    <string name="settings_reasoning_title">Reasoning mode</string>
+    <string name="settings_reasoning_off">Off</string>
+    <string name="settings_llm_delete_key_dialog_title">Delete API key</string>
+    <string name="settings_llm_delete_key_dialog_text">Delete the saved API key from this device? It cannot be recovered.</string>
+
+    <!-- Updater dialogs -->
+    <string name="update_available_title">Version %1$s is available</string>
+    <string name="update_size">Size: %1$s. The download takes time; you will need to confirm the installation.</string>
+    <string name="update_mandatory">This update is required to keep the app running.</string>
+    <string name="update_button">Update</string>
+    <string name="update_later">Later</string>
+    <string name="update_download_title">Downloading update</string>
+    <string name="update_progress_desc">Downloading update: %1$d%%</string>
+    <string name="update_progress">Downloaded %1$d%% (%2$s of %3$s)</string>
+    <string name="update_progress_desc_unknown">Downloading update</string>
+    <string name="update_progress_unknown">Downloading… %1$s</string>
+    <string name="update_permission_title">Permission required to install</string>
+    <string name="update_permission_text">To install the update, allow this app to install apps from this source. After granting it, come back and tap \"Allow\" again.</string>
+    <string name="update_allow">Allow</string>
+    <string name="update_install_title">Install the update?</string>
+    <string name="update_install_text">The update is downloaded and verified. The system installer will open — confirm the installation.</string>
+    <string name="update_install">Install</string>
+
+    <!-- In-chat device_search result previews -->
+    <string name="chat_search_results_title">Found on device</string>
+    <string name="chat_search_result_open">Open</string>
+    <string name="chat_search_result_document">Document</string>
+    <string name="chat_search_result_file">File</string>
+
+    <!-- Shared chrome: internal & chat top bars -->
+    <string name="nav_back_cd">Back</string>
+    <string name="chat_topbar_search_cd">Search in chat</string>
+
+    <!-- Chat composer / attachments / in-chat search -->
+    <string name="chat_composer_attach_cd">Attach file</string>
+    <string name="chat_composer_attach_image">Image</string>
+    <string name="chat_composer_attach_camera">Take a photo</string>
+    <string name="chat_composer_placeholder">Message</string>
+    <string name="chat_composer_stop_cd">Stop generating</string>
+    <string name="chat_composer_dictate_cd">Dictate (hold)</string>
+    <string name="chat_dictation_listening_cd">Listening — release to insert text</string>
+    <string name="chat_dictation_unavailable">Speech recognition is not available on this device.</string>
+    <string name="chat_dictation_no_speech">Speech not recognized. Try again.</string>
+    <string name="chat_dictation_permission">No microphone permission — dictation is unavailable.</string>
+    <string name="chat_dictation_press_again">Permission granted — hold the mic to dictate.</string>
+    <string name="chat_attachment_size_unknown">size unknown</string>
+    <string name="chat_attachment_load_failed">failed to load</string>
+    <string name="chat_attachment_remove_cd">Remove attachment</string>
+    <string name="chat_search_close_cd">Close search</string>
+    <string name="chat_search_empty">Nothing found</string>
+
+    <!-- Chat screen: status lines + message bubble accessibility -->
+    <string name="chat_title_fallback">Chat</string>
+    <string name="chat_background_prefix">In background: %1$s</string>
+    <string name="chat_queued_in_line">Your request has been accepted and is waiting for a free agent slot — it will run automatically.</string>
+    <string name="chat_speak_message_cd">Speak message</string>
+    <string name="chat_copy_reply">Copy reply</string>
+    <string name="chat_copy_reply_copied">Copied</string>
+
+    <!-- ============================ Chat list screen (unified style) ============================ -->
+    <string name="chat_list_empty">No chats yet — start a new one</string>
+    <string name="chat_search_label">Search chats</string>
+    <string name="chat_search_title_match">Title match</string>
+    <string name="chat_delete_dialog_text">Do you really want to delete this chat? This action is irreversible.</string>
+    <string name="chat_new_chat">New chat</string>
+    <string name="chat_nav_base">Base</string>
+    <string name="chat_pin_cd">Pin</string>
+    <string name="chat_unpin_cd">Unpin</string>
+    <string name="chat_delete_cd">Delete chat</string>
+    <string name="chat_no_messages">No messages</string>
+    <string name="chat_preview_you_prefix">You: %1$s</string>
+
+    <!-- ============================ Home hub (unified style) ============================ -->
+    <string name="home_section_connection">Connection</string>
+    <string name="home_section_main">Main</string>
+    <string name="home_section_automation">Automations</string>
+    <string name="home_section_more">More</string>
+    <string name="home_configure">Configure</string>
+    <string name="home_row_chats">Chats</string>
+    <string name="home_row_chats_sub">All conversations with the agent</string>
+    <string name="home_row_schedules">Scheduled tasks</string>
+    <string name="home_row_schedules_sub">Run the agent on a schedule</string>
+    <string name="home_row_automation">Automation rules</string>
+    <string name="home_row_automation_sub">Phone event → agent action</string>
+    <string name="home_row_skills">Skills</string>
+    <string name="home_row_skills_sub">Reusable app scenarios</string>
+    <string name="home_row_suggestions">Suggestions</string>
+    <string name="home_row_suggestions_sub">Automation ideas</string>
+    <string name="home_row_provider">Provider connection</string>
+    <string name="home_row_provider_sub">Provider (OpenAI-compatible)</string>
+    <string name="home_row_database">Browse database</string>
+    <string name="home_row_database_sub">Agent records and history</string>
+    <string name="home_row_memory">What the agent remembers</string>
+    <string name="home_row_memory_sub">The agent\'s long-term memory</string>
+    <string name="home_row_activity">What the agent did</string>
+    <string name="home_row_activity_sub">Work report and action undo</string>
+    <string name="home_row_comms">Communications</string>
+    <string name="home_row_comms_sub">Recordings, transcripts and search</string>
+    <string name="home_row_people">People</string>
+    <string name="home_row_people_sub">Profiles and communication history</string>
+    <string name="home_row_settings">Settings</string>
+    <string name="home_row_settings_sub">Model, permissions, theme</string>
+    <string name="home_footer_copyright">© 2026 Mikhail Bazarov</string>
+
+    <!-- ============================ Memory screen (unified style) ============================ -->
+    <string name="memory_section_about_title">About</string>
+    <string name="memory_intro">The agent\'s long-term memory: facts and preferences it saved via the memory_save tool or while parsing notifications. The memory survives an app restart. Deletion is irreversible.</string>
+    <string name="memory_search_label">Search memory</string>
+    <string name="memory_search_clear">Clear search</string>
+    <string name="memory_loading">Loading…</string>
+    <string name="memory_searching">Searching…</string>
+    <string name="memory_empty_search">Nothing found</string>
+    <string name="memory_empty">Memory is empty for now</string>
+    <string name="memory_delete_one">Delete from memory</string>
+    <string name="memory_forget_all">Forget everything</string>
+    <string name="memory_forget_dialog_title">Forget everything</string>
+    <string name="memory_forget_dialog_text">Delete all of the agent\'s long-term memory? This is irreversible — the notes cannot be recovered.</string>
+    <string name="memory_forget_confirm">Forget</string>
+
+    <!-- ============================ Scheduled tasks screen (unified style) ============================ -->
+    <string name="schedule_section_about_title">About</string>
+    <string name="schedule_intro">The agent runs scheduled tasks by itself, on time. For example: send a weather summary every morning. You can create a task in chat — just ask. One-shot reminders disappear after they run.</string>
+    <string name="schedule_open_chats">Open chats</string>
+    <string name="schedule_loading">Loading…</string>
+    <string name="schedule_empty">No scheduled tasks — ask the agent to create one in chat</string>
+    <string name="schedule_delete">Delete task</string>
+
+    <!-- ============================ Suggestions screen (unified style) ============================ -->
+    <string name="suggestions_section_about_title">About</string>
+    <string name="suggestions_intro">Suggestions are automations the agent proposes from your app usage history, for example \"you open Telegram around 08:00\". You can hide a suggestion or turn it into a rule right away.</string>
+    <string name="suggestions_empty">No suggestions.\n\nEither there is not enough data from the last two weeks for a confident pattern, or every suggestion found has already been accepted or hidden.</string>
+    <string name="suggestions_usage_access">No access to usage data.\n\nSuggestions are built from your app launch history. Grant \"Usage access\" to Meha in Android settings and return to this screen.</string>
+    <string name="suggestions_open_settings">Open settings</string>
+    <string name="suggestions_confidence">Confidence: %1$d%% · %2$d of %3$d days · rule: when %4$s, notification</string>
+    <string name="suggestions_dismiss">Hide</string>
+    <string name="suggestions_creating">Creating…</string>
+    <string name="suggestions_create_rule">Create rule</string>
+
+    <!-- ============================ Skills library screen (unified style) ============================ -->
+    <string name="skills_section_about_title">About</string>
+    <string name="skills_intro">Skills are repeatable app scenarios saved by the agent (the skill_save tool). A run is performed through Meha\'s accessibility service; deletion is irreversible.</string>
+    <string name="skills_search_label">Search skills</string>
+    <string name="skills_running">Running \"%1$s\"…</string>
+    <string name="skills_empty_search">Nothing found for the query \"%1$s\".</string>
+    <string name="skills_empty">No saved skills. They can be created through the agent or recorded.</string>
+    <string name="skills_run_skill_cd">Run skill \"%1$s\"</string>
+    <string name="skills_delete_skill_cd">Delete skill \"%1$s\"</string>
+    <string name="skills_delete_title">Delete skill</string>
+    <string name="skills_delete_text">Delete the skill \"%1$s\"? This is irreversible.</string>
+    <string name="skills_report_success">Skill completed</string>
+    <string name="skills_report_failure">Skill failed</string>
+    <string name="skills_close">Close</string>
+    <string name="skills_params_title">Parameters</string>
+    <string name="skills_no_params">This skill has no parameters.</string>
+    <string name="skills_steps_title">Steps</string>
+    <string name="skills_no_steps">This skill has no steps.</string>
+    <string name="skills_edit_title">Edit skill</string>
+    <string name="skills_edit_name">Name</string>
+    <string name="skills_edit_description">Description</string>
+    <string name="skills_edit_hint">Step editing is done by the agent (the skill_save tool).</string>
+    <string name="skills_run_title">Run \"%1$s\"</string>
+    <string name="skills_run_choices">allowed: %1$s</string>
+    <string name="skills_run_hint">Fields marked with * are required. Empty optional fields use their default value.</string>
+    <string name="skills_run_confirm">Run</string>
+
+    <!-- ============================ Automation rules screen (unified style) ============================ -->
+    <string name="automation_section_about_title">About</string>
+    <string name="automation_intro">An automation rule is the agent\'s reaction to a phone event: notify when an open Wi-Fi network appears nearby, or run a task on low battery. The agent creates rules in chat; here you can enable, disable or delete them.</string>
+    <string name="automation_empty">No automation rules.\n\nThe agent creates rules: ask it in chat to add one — for example \"turn on a notification when a message arrives\". Here you can only enable, disable or delete them.</string>
+    <string name="automation_footer">Rules are created by the agent in chat (the automation_rule_create tool). Here you can enable, disable or delete them.</string>
+    <string name="automation_when">When: %1$s</string>
+    <string name="automation_action">Action: %1$s</string>
+    <string name="automation_enabled">enabled</string>
+    <string name="automation_disabled">disabled</string>
+    <string name="automation_enable_rule_cd">Enable rule %1$s</string>
+    <string name="automation_disable_rule_cd">Disable rule %1$s</string>
+    <string name="automation_delete_rule_cd">Delete rule</string>
+
+    <!-- ============================ Permissions screen (unified style) ============================ -->
+    <string name="permissions_section_about_title">About</string>
+    <string name="permissions_intro">Permissions are requested only the first time the matching tool is used. Here you can pre-enable or check any permission.</string>
+    <string name="permissions_granted">Granted</string>
+    <string name="permissions_denied">Not granted</string>
+    <string name="permissions_special">Special</string>
+    <string name="permissions_request">Request</string>
+    <string name="permissions_special_access_title">Special access</string>
+    <string name="permissions_special_access_hint">These accesses are granted in Android settings.</string>
+    <string name="permissions_restricted_title">If a toggle won\'t turn on</string>
+    <string name="permissions_restricted_hint">On Android 13+, the system blocks Accessibility and Notification access for apps installed outside a store. Open Settings → Apps → Meha → ⋮ → "Allow restricted settings", then try again. This is Android\'s protection, not a Meha error.</string>
+
+    <!-- Agent-activity result labels (shared) -->
+    <string name="audit_success">Success</string>
+    <string name="audit_error">Error</string>
+
+    <!-- ============================ Agent activity screen (unified style) ============================ -->
+    <string name="activity_section_about_title">How it works</string>
+    <string name="activity_intro">This collects what the agent did on the phone: tool, time and result. Only actions with a reverse operation can be undone — for example creating a note, task or memory entry; the rest stay in history and cannot be undone.</string>
+    <string name="activity_refresh_cd">Refresh report</string>
+    <string name="activity_empty">Empty for now — the agent has not done anything yet</string>
+    <string name="activity_empty_hint">The agent\'s actions will appear here; only those with a reverse operation can be undone.</string>
+    <string name="activity_start_chat">Start in chat</string>
+    <string name="activity_undo">Undo</string>
+    <string name="activity_undoing">Undoing…</string>
+
+    <!-- ============================ Database viewer screen (unified style) ============================ -->
+    <string name="db_section_about_title">About</string>
+    <string name="db_intro">View only. Records cannot be added, edited or deleted from the interface — this can only be done through the agent in chat.</string>
+    <string name="db_empty_base">The database is empty</string>
+    <string name="db_no_rows">No records — data will appear once the agent creates it</string>
+    <string name="db_big_table">large table</string>
+    <string name="db_page_of">page %1$d of %2$d</string>
+    <string name="db_read_only">read only</string>
+    <string name="db_prev">‹ Back</string>
+    <string name="db_next">Next ›</string>
+
+    <!-- ============================ Communications group (unified style) ============================ -->
+    <!-- Communications -->
+    <string name="comm_section_about_title">About</string>
+    <string name="comm_intro">Local recordings and their transcripts: dictaphone recordings, audio files and messenger voice messages (by capturing sound with your confirmation). Android does not allow recording phone calls — that is not available. Audio never leaves the device — speech is recognized on the phone; a downloaded recognition model is required. If sending text to the cloud is enabled, only the transcript text is sent.</string>
+    <string name="comm_search_label">Search transcripts</string>
+    <string name="comm_search_support">Search covers only indexed transcripts.</string>
+    <string name="comm_search_clear">Clear search</string>
+    <string name="comm_import_audio">Import audio</string>
+    <string name="comm_model_not_downloaded">Model not downloaded</string>
+    <string name="comm_loading">Loading…</string>
+    <string name="comm_searching">Searching…</string>
+    <string name="comm_empty_search">Nothing found</string>
+    <string name="comm_no_audio_permission">No access to the device\'s audio files. Grant the permission or import a file manually.</string>
+    <string name="comm_open_settings">Open settings</string>
+    <string name="comm_empty_no_model">No recordings yet. To transcribe, first download the model to the device.</string>
+    <string name="comm_empty">No recordings yet. Import audio or grant access to audio files.</string>
+    <string name="comm_transcribing">Transcribing…</string>
+    <string name="comm_transcribe">Transcribe</string>
+    <string name="comm_kept">Kept</string>
+    <string name="comm_keep">Keep</string>
+    <string name="comm_delete_recording">Delete recording</string>
+    <string name="comm_delete_dialog_text">Delete \"%1$s\" together with its transcript? This is irreversible.</string>
+
+    <!-- People -->
+    <string name="people_section_about_title">About</string>
+    <string name="people_intro">People the agent knows from calls, SMS, messengers and transcripts. Open a person to see the communication history and what the agent remembers about them.</string>
+    <string name="people_search_label">Search by name</string>
+    <string name="people_search_support">The search runs over the person\'s name in the personal base.</string>
+    <string name="people_search_clear">Clear search</string>
+    <string name="people_loading">Loading…</string>
+    <string name="people_searching">Searching…</string>
+    <string name="people_empty_search">Nothing found</string>
+    <string name="people_empty">No people yet. The agent adds them while parsing calls, SMS and messengers.</string>
+
+    <!-- Person profile -->
+    <string name="person_title_fallback">Person</string>
+    <string name="person_loading">Loading…</string>
+    <string name="person_not_found">Person not found.</string>
+    <string name="person_about_title">About the person</string>
+    <string name="person_empty">No events yet: calls, SMS, transcripts and notes about the person.</string>
+
+    <!-- Recording transcript -->
+    <string name="transcript_title_fallback">Transcript</string>
+    <string name="transcript_recording_title">Recording</string>
+    <string name="transcript_recording_not_found">Recording not found.</string>
+    <string name="transcript_local_hint">Audio stays on the device; transcription runs locally.</string>
+    <string name="transcript_loading">Loading…</string>
+    <string name="transcript_empty">No transcript yet.</string>
+    <string name="transcript_model_hint">First download the transcription model in settings.</string>
+    <string name="transcript_speaker_dialog_title">Who said this</string>
+    <string name="transcript_speaker_name_label">Speaker name</string>
+    <string name="transcript_save_name">Save name</string>
+    <string name="transcript_mark_self">This is me</string>
+    <string name="transcript_open_person">Open the person\'s profile</string>
+    <string name="transcript_link_person_title">Link to a person</string>
+    <string name="transcript_no_persons">No saved people.</string>
+    <string name="transcript_done">Done</string>
+    <string name="transcript_error_prefix">Error: %1$s</string>
+    <string name="transcript_status_prefix">Status: %1$s</string>
+
+    <!-- ============================ Provider screen (unified style) ============================ -->
+    <string name="provider_section_about_title">About</string>
+    <string name="settings_reasoning_low">Low</string>
+    <string name="settings_reasoning_medium">Medium</string>
+    <string name="settings_reasoning_high">High</string>
+
+    <!-- ============================ Onboarding (unified style) ============================ -->
+    <string name="onboarding_intro">Hi! Meha is an AI agent that controls your phone. Set up the connection to a model and we will get started.</string>
+    <string name="onboarding_model_title">Model</string>
+    <string name="onboarding_models_hint_fill">Enter the endpoint and API key — the model list will load automatically.</string>
+    <string name="onboarding_local_note">You can work fully offline with a model on the device: it is downloaded once and needs no internet. It is configured in Settings; requires ≥ 11 GB of RAM.</string>
+    <string name="onboarding_permissions_title">Permissions</string>
+    <string name="onboarding_permissions_body">Permissions are requested as they are used — the first time the agent needs the matching tool. The full list and controls are on the \"All permissions\" screen in settings. You can deny any permission — then the agent simply cannot use that tool. On Android 13+, the system may refuse to enable Accessibility or Notification access: open the app info page and tap ⋮ → \"Allow restricted settings\".</string>
+    <string name="onboarding_permissions_open">Open \"All permissions\"</string>
+    <string name="onboarding_continue">Continue</string>
+
+    <!-- ============================ License screen (unified style) ============================ -->
+    <string name="license_title">License Agreement</string>
+    <string name="license_warning_title">Attention</string>
+    <string name="license_warning_body">ATTENTION. The app gets FULL access to your device and data and performs actions on your behalf. Use it at your own risk only.</string>
+    <string name="license_conditions_title">Terms</string>
+    <string name="license_term_1">The app is provided \"as is\", without any warranties — express or implied.</string>
+    <string name="license_term_2">The author is not liable for any consequences of use: loss or damage of data, deletion of files, failures, errors, unwanted actions, expenses, data leakage, device lockout and any other direct or indirect losses.</string>
+    <string name="license_term_3">The app may have full access to files, contacts, messages, calls, camera, microphone, location, notifications, screen and system settings, and may perform actions without additional confirmation — including modifying and deleting data.</string>
+    <string name="license_term_4">You use the app at your own risk and bear FULL responsibility for all actions performed by you or by the agent on your command.</string>
+    <string name="license_term_5">Third-party LLM providers may be used for operation: part of the data (your messages and the content passed to the agent) is sent to the service you choose. The author does not control these services and is not responsible for data processing on their side.</string>
+    <string name="license_term_6">The app may contain errors and perform unpredictable actions. Before using it on important data, make a backup.</string>
+    <string name="license_term_7">By tapping \"Accept\", you confirm that you have read the terms and accept them in full. If you disagree — close the app.</string>
+    <string name="license_term_8">The author may change the terms; the current version is shown on the first launch after changes.</string>
+    <string name="license_footer">By continuing, you confirm that you act at your own risk.</string>
+    <string name="license_accept">Accept and continue</string>
+    <string name="license_decline">Decline and exit</string>
+</resources>

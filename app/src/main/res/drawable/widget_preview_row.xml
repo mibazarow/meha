@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Preview-only chat-card background: dark-scheme surface container (#151B15), 12dp corners. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#151B15" />
+    <corners android:radius="12dp" />
+</shape>

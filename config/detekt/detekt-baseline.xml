@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>UnusedParameter:ChatScreen.kt$chatId: Long</ID>
+    <ID>UnusedParameter:IdentityNormalizer.kt$IdentityNormalizer$appPackage: String = NO_PACKAGE</ID>
+  </CurrentIssues>
+</SmellBaseline>

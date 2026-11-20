@@ -1,0 +1,717 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Network -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Files / Storage -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+    <!-- Contacts -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+
+    <!-- Camera & Microphone -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- SMS -->
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <!-- Needed for a default SMS app (ROLE_SMS) to write/delete SMS rows. -->
+    <uses-permission android:name="android.permission.WRITE_SMS" />
+    <!-- SMS interception (update.md §2.3): non-abortable SMS_RECEIVED receiver. The receiver is
+         guarded by BROADCAST_SMS so only the system can address it.
+         https://developer.android.com/reference/android/Manifest.permission#RECEIVE_SMS -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+
+    <!-- Calls -->
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <!-- Telephony (telephony_info) -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- SIM own number (sim_numbers): SubscriptionManager.getPhoneNumber / getLine1Number -->
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+
+    <!-- Location -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- Background location: REQUIRED to keep receiving location updates / evaluating geofences
+         while the app is not in the foreground (Android 10+, API 29+). It is a SEPARATE runtime
+         grant ("Allow all the time"); on Android 11+ the user must pick it in system settings.
+         The location_updates_* / geofence_* tools check it at runtime and report honestly when it
+         is missing (foreground-only updates and geofences are then limited by the OS).
+         https://developer.android.com/develop/sensors-and-location/location/permissions -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- Calendar -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+
+    <!-- System: brightness / wifi / bluetooth / audio -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <!-- Wi-Fi connect / suggestions / Wi-Fi Direct / local-only hotspot / RTT (wifi_connect_specifier,
+         wifi_suggest_add, wifi_direct_*, hotspot_local_*, wifi_rtt_range). On API 31+ these APIs
+         require NEARBY_WIFI_DEVICES instead of ACCESS_FINE_LOCATION. It is declared WITHOUT
+         usesPermissionFlags="neverForLocation" on purpose: the tools return real BSSIDs / peer MAC
+         addresses (ranging, peer discovery) and Wi-Fi Direct connects by address, which that flag
+         would suppress. On API <= 30 ACCESS_FINE_LOCATION (declared above) is used instead; each
+         tool checks the correct permission at runtime and reports an honest error otherwise.
+         https://developer.android.com/develop/connectivity/wifi/wifi-permissions -->
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" />
+    <!-- IR emitter (ir_transmit). Normal, install-time permission. Declaring it does not
+         guarantee that the hardware emitter exists (checked at runtime with
+         ConsumerIrManager.hasIrEmitter()).
+         https://developer.android.com/reference/android/Manifest.permission#TRANSMIT_IR -->
+    <uses-permission android:name="android.permission.TRANSMIT_IR" />
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+    <!-- BLE scan/connect (ble_scan, ble_connect). BLUETOOTH_SCAN is declared WITHOUT
+         usesPermissionFlags="neverForLocation" on purpose: the tools return real MAC addresses and
+         must connect by address, which the neverForLocation flag would suppress. Because the flag
+         is absent, scanning still needs ACCESS_FINE_LOCATION on API <= 30 (declared above for the
+         location tools). BLUETOOTH_CONNECT is required on API 31+ to read names/addresses and to
+         connect. https://developer.android.com/develop/connectivity/bluetooth/bt-permissions -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions" />
+    <!-- Wallpaper (wallpaper_set). SET_WALLPAPER is a normal, install-time permission: it is
+         granted automatically at install with no runtime dialog. Required by
+         WallpaperManager.setBitmap / setStream, including the FLAG_LOCK lock-screen wallpaper.
+         https://developer.android.com/reference/android/Manifest.permission#SET_WALLPAPER -->
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <!-- Heart-rate (`TYPE_HEART_RATE`) sensors require BODY_SENSORS; used by the health-sensor
+         listing and the `heart_rate_threshold` automation trigger. It is a runtime permission, so
+         nothing is read until the user grants it.
+         https://developer.android.com/reference/android/Manifest.permission#BODY_SENSORS -->
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
+    <!-- Streaming sensors faster than 200 Hz needs this normal (install-time) permission on
+         Android 12+ (API 31+); without it the platform silently caps the rate. Only the
+         `sensor_subscribe` tool can ask for a fast rate and it reports the real sampled count, so a
+         cap is visible to the agent.
+         https://developer.android.com/reference/android/Manifest.permission#HIGH_SAMPLING_RATE_SENSORS -->
+    <uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <!-- Exact alarms (alarm_exact_*): special access, checked at runtime via
+         AlarmManager.canScheduleExactAlarms(). Android 14+ does not pre-grant it to apps
+         targeting API 33+. https://developer.android.com/about/versions/14/changes/schedule-exact-alarms -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- Re-arm persisted alarms after a reboot (BootCompletedReceiver). -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Required by Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS (battery_optimization_request) -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
+
+    <!-- Background / notifications -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- DND special access (dnd_status/dnd_set): declaring this makes the app appear in the
+         system "Do Not Disturb access" list so the user can grant policy access.
+         https://developer.android.com/reference/android/Manifest.permission#ACCESS_NOTIFICATION_POLICY -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+
+    <!-- Apps: list/launch/uninstall third-party packages -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- keep_alive_start holds a PARTIAL_WAKE_LOCK while it keeps the process alive. WAKE_LOCK is a
+         normal, install-time permission; the lock itself is always acquired with a bounded timeout.
+         https://developer.android.com/reference/android/os/PowerManager#newWakeLock(int,%20java.lang.String) -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Generic foreground service (fgs_start type=specialUse / keep_alive_start). Android 14+
+         (API 34+) requires the per-type permission for every declared FGS type.
+         https://developer.android.com/develop/background-work/services/fgs/service-types -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- Screen recording (screen_record_start/stop/status): the foreground service that captures
+         MediaProjection must declare the mediaProjection FGS type on Android 14+ (API 34+), which
+         requires this permission. The user must still grant screen-capture consent per session.
+         https://developer.android.com/about/versions/14/changes/fgs-types-required -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <!-- Location update stream (location_updates_start/stop): the foreground service that calls
+         LocationManager.requestLocationUpdates must declare the location FGS type on Android 14+
+         (API 34+), which requires this permission (prerequisite: ACCESS_FINE_LOCATION or
+         ACCESS_COARSE_LOCATION).
+         https://developer.android.com/about/versions/14/changes/fgs-types-required#location -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <!-- Floating assistant («Плавающий помощник»). SYSTEM_ALERT_WINDOW is a special access, not a
+         runtime dialog: it is declared here and the user must grant it in system Settings
+         (Settings.ACTION_MANAGE_OVERLAY_PERMISSION); the app renders nothing until
+         Settings.canDrawOverlays(context) is true. The same grant is an explicit exemption from the
+         Android 10+ background-activity-start restrictions, which is what lets the bubble open the
+         chat in MainActivity.
+         https://developer.android.com/reference/android/Manifest.permission#SYSTEM_ALERT_WINDOW
+         https://developer.android.com/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
+         https://developer.android.com/guide/components/activities/secure-bal -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!-- Optional hardware used by the IR/USB tools. Declared not-required so the app stays
+         installable on devices without an IR emitter or USB host controller; each tool checks the
+         real capability at runtime (hasIrEmitter() / UsbManager).
+         https://developer.android.com/guide/topics/manifest/uses-feature-element -->
+    <uses-feature android:name="android.hardware.consumerir" android:required="false" />
+    <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+    <!-- BLE (ble_scan/ble_connect). Not required so the app stays installable on devices without
+         Bluetooth LE; the tools report an honest error at runtime.
+         https://developer.android.com/reference/android/Manifest.permission#BLUETOOTH_SCAN -->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+    <!-- Wi-Fi Direct (wifi_direct_discover/connect/disconnect). Not required so the app stays
+         installable on devices without P2P support; the tools report an honest error at runtime.
+         https://developer.android.com/develop/connectivity/wifi/wifi-direct -->
+    <uses-feature android:name="android.hardware.wifi.direct" android:required="false" />
+
+    <!-- Phone-only: приложение рассчитано на экраны телефонов. Объявляем large/xlarge экраны
+         неподдерживаемыми, чтобы Android не включал для приложения планшетный режим совместимости;
+         ручную установку на планшет по APK это не запрещает.
+         https://developer.android.com/guide/topics/manifest/supports-screens-element -->
+    <supports-screens
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="false"
+        android:xlargeScreens="false" />
+
+    <!--
+      Package visibility (Android 11+, API 30+). files_open and share_file verify a real handler
+      exists (Intent.resolveActivity / PackageManager.queryIntentActivities) BEFORE launching, so
+      they can report honest success/failure instead of a chooser that silently matches nothing.
+      The app already requests QUERY_ALL_PACKAGES; this minimal <queries> block keeps those checks
+      meaningful even if that permission is ever dropped.
+      https://developer.android.com/training/package-visibility
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+        </intent>
+    </queries>
+
+    <!-- Auto Backup (update.md idea #8, additive): a minimal, secret-free set of preference files
+         is restored after a reinstall. `dataExtractionRules` is used on API 31+ and
+         `fullBackupContent` on API <= 30; both point at the same include list. Secrets (API key,
+         SSH passwords/passphrases) live in Keystore-backed EncryptedSharedPreferences and are never
+         included.
+         https://developer.android.com/identity/data/autobackup -->
+    <application
+        android:name=".AndharnessApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:localeConfig="@xml/locales_config"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ANDharness"
+        android:usesCleartextTraffic="false">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.ANDharness"
+            android:windowSoftInputMode="adjustResize">
+            <!-- adjustResize: при открытии клавиатуры окно ужимается (а не панорамируется
+                 системой), поэтому топ-бар не «улетает» вверх, а контент чата уходит под IME.
+                 https://developer.android.com/guide/topics/manifest/activity-element#wsoft -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Quick Settings tile (update.md idea #10): long-pressing the tile opens this activity
+                 instead of the system App Info screen — the documented override for the default
+                 long-press behaviour.
+                 https://developer.android.com/develop/ui/views/quicksettings-tiles#long-tap -->
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+            </intent-filter>
+        </activity>
+
+        <!-- Share sheet (update.md idea #10). Thin translucent receiver: it copies the shared
+             payload into a new chat and brings MainActivity to the front, so the app needs no
+             second entry point into the agent loop.
+             text/plain and image/* for ACTION_SEND (text / single-picture shares), */* for
+             ACTION_SEND_MULTIPLE (several files/URIs).
+             https://developer.android.com/training/sharing/receive -->
+        <activity
+            android:name=".inbound.ShareReceiverActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:label="@string/share_target_label"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <!-- A single shared picture (`ACTION_SEND` + `EXTRA_STREAM`, an `image/*` content URI).
+                 Kept as its OWN <intent-filter>: each filter carries a single mime type, so there is
+                 no ambiguity about how several <data> elements combine.
+                 https://developer.android.com/training/sharing/receive -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
+
+        <!-- Text-selection toolbar target «Спросить агента» (update.md idea #10).
+             https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT -->
+        <activity
+            android:name=".inbound.ProcessTextActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:label="@string/process_text_label"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <!-- «Что это?» — the explicit «explain / analyse what I shared» target for the share sheet
+             (text and images) and the text-selection toolbar. It forwards the payload with the
+             explain flag; the chat is auto-run with an explain instruction. One <intent-filter> per
+             (action, mime type) keeps matching unambiguous.
+             https://developer.android.com/training/sharing/receive
+             https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT -->
+        <activity
+            android:name=".inbound.ExplainReceiverActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:label="@string/explain_target_label"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <!-- Quick Settings tile «ANDharness» (update.md idea #10). BIND_QUICK_SETTINGS_TILE makes
+             the system the only possible binder; exported so the tile can be bound and shown.
+             https://developer.android.com/develop/ui/views/quicksettings-tiles -->
+        <service
+            android:name=".inbound.QuickChatTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_tile_chat"
+            android:label="@string/tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- Home-screen widget (update.md idea #10): Glance AppWidget showing the app name, the
+             newest chat titles and a «Новый чат» action.
+             https://developer.android.com/develop/ui/compose/glance/create-app-widget -->
+        <receiver
+            android:name=".inbound.AndharnessWidgetReceiver"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/andharness_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".bg.AgentForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <!-- Long-running downloads (e.g. SpeechModelDownloadWorker). WorkManager runs them under its
+             own SystemForegroundService, so the foreground service type must be declared here
+             (required for apps targeting Android 14+, API 34+). `dataSync` is already allowed by
+             FOREGROUND_SERVICE_DATA_SYNC above; the merge keeps WorkManager's declaration and adds
+             the type. Reference:
+             https://developer.android.com/develop/background-work/background-tasks/persistent/how-to/long-running -->
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
+
+        <service
+            android:name=".bg.ScreenRecordService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
+
+        <!-- App-playback audio capture (audio_capture_app): the service captures ONLY the audio
+             played by other apps with AudioPlaybackCaptureConfiguration + AudioRecord and never
+             creates a virtual display. On Android 14+ (API 34+) getMediaProjection() may only be
+             called from a running foreground service of type mediaProjection, hence this service.
+             It reuses FOREGROUND_SERVICE_MEDIA_PROJECTION and RECORD_AUDIO declared above; no
+             microphone foreground-service type is needed (no mic is used by this service).
+             https://developer.android.com/media/platform/av-capture -->
+        <service
+            android:name=".bg.AudioCaptureService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
+
+        <!-- DND condition provider (dnd_set): on Android 15 (targetSdk 35) the global DND filter
+             cannot be changed with setInterruptionFilter(); the supported path is an
+             AutomaticZenRule owned by a ConditionProviderService. The system validates this
+             component when dnd_set calls addAutomaticZenRule/updateAutomaticZenRule, so it must be
+             exported (so the system can bind) and protected by BIND_CONDITION_PROVIDER_SERVICE.
+             RULE_INSTANCE_LIMIT=1 keeps exactly one DND rule for this app.
+             https://developer.android.com/reference/android/service/notification/ConditionProviderService -->
+        <service
+            android:name=".bg.DndConditionProviderService"
+            android:exported="true"
+            android:permission="android.permission.BIND_CONDITION_PROVIDER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.ConditionProviderService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.notification.RULE_INSTANCE_LIMIT"
+                android:value="1" />
+        </service>
+
+        <!-- Location update stream (location_updates_start/stop): keeps the process alive and calls
+             LocationManager.requestLocationUpdates with a bounded in-memory history. Foreground
+             service type `location` (Android 14+/API 34+ requires FOREGROUND_SERVICE_LOCATION).
+             https://developer.android.com/develop/background-work/services/fgs/service-types -->
+        <service
+            android:name=".bg.LocationUpdatesService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+
+        <!-- Generic foreground service (fgs_start type=dataSync|specialUse, keep_alive_start).
+             `specialUse` additionally requires the PROPERTY_SPECIAL_USE_FGS_SUBTYPE property below,
+             and `shortService` is deliberately NOT combined here: the platform IGNORES a shortService
+             declaration mixed with any other type, so it lives on its own service further down.
+             https://developer.android.com/develop/background-work/services/fgs/service-types -->
+        <!-- Web engine host (web_* tools): keeps the assistant process in the foreground while the
+             offscreen WebView browsing session is alive, so the session survives backgrounding.
+             Type `dataSync` requires the FOREGROUND_SERVICE and FOREGROUND_SERVICE_DATA_SYNC
+             permissions, both already declared above.
+             https://developer.android.com/develop/background-work/services/fgs/service-types -->
+        <service
+            android:name=".bg.WebEngineService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <service
+            android:name=".bg.GenericForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync|specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Agent-requested foreground session: keeps the assistant process alive for a user-initiated background task (fgs_start / keep_alive_start)." />
+        </service>
+
+        <!-- shortService (fgs_start type=shortService): ~3-minute self-terminating foreground service.
+             It needs no type-specific permission, only the base FOREGROUND_SERVICE; the service stops
+             itself well before the platform timeout. -->
+        <service
+            android:name=".bg.ShortForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="shortService" />
+
+        <!-- Floating assistant ("Плавающий помощник"): owns the draggable overlay bubble and the
+             in-overlay quick-ask window, both TYPE_APPLICATION_OVERLAY. It is a foreground service so
+             the process (and therefore the bubble) survives while the user is in other apps.
+             Type `specialUse` is the documented type for a valid use case not covered by any other
+             type; on Android 14+ (API 34+) it requires FOREGROUND_SERVICE_SPECIAL_USE (declared
+             above) and the PROPERTY_SPECIAL_USE_FGS_SUBTYPE property explaining the reason.
+             https://developer.android.com/develop/background-work/services/fgs/service-types#special
+             https://developer.android.com/about/versions/14/changes/fgs-types-required -->
+        <service
+            android:name=".service.OverlayAssistantService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="User-enabled floating assistant bubble: a SYSTEM_ALERT_WINDOW overlay from any screen that hands a question to the Меха chat. The foreground service exists only to keep the user-visible bubble alive; it stops when the toggle is off, the user long-presses the bubble, or the notification action is tapped." />
+        </service>
+
+        <!-- Restores the bubble after a reboot / self-update, but only when the toggle is ON, the
+             EULA is accepted and the overlay grant is present (the receiver re-checks all three).
+             BOOT_COMPLETED and MY_PACKAGE_REPLACED are manifest-exemptions on Android 8+, so they are
+             delivered even after process death.
+             https://developer.android.com/develop/background-work/background-tasks/broadcasts/broadcast-exceptions -->
+        <receiver
+            android:name=".service.OverlayAssistantBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Background core / watchdog (update.md §1.3). It hosts the automation engine, is the
+             restart target of the crash-restart alarm (RestartReceiver) and is started after boot.
+             Type `specialUse` (Android 14+/API 34+) requires FOREGROUND_SERVICE_SPECIAL_USE
+             (declared above) and the PROPERTY_SPECIAL_USE_FGS_SUBTYPE property explaining the reason.
+             https://developer.android.com/develop/background-work/services/fgs/service-types
+             https://developer.android.com/reference/android/content/pm/ServiceInfo#FOREGROUND_SERVICE_TYPE_SPECIAL_USE -->
+        <service
+            android:name=".bg.WatchdogService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Persistent assistant core: keeps the crash-protected process and the automation/interception subsystems alive in the background (update.md §1.3)." />
+        </service>
+
+        <!-- JobScheduler jobs created by job_schedule. BIND_JOB_SERVICE is required so only the
+             system JobScheduler can bind to it.
+             https://developer.android.com/reference/android/app/job/JobService -->
+        <service
+            android:name=".bg.AndharnessJobService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <!-- Geofence transitions (geofence_add/remove/list): GeofencingClient delivers ENTER/EXIT/DWELL
+             as a PendingIntent broadcast to this unexported receiver, which posts a notification and
+             records the event. https://developer.android.com/develop/sensors-and-location/location/geofencing -->
+        <receiver
+            android:name=".data.tools.location.GeofenceReceiver"
+            android:exported="false" />
+
+        <service
+            android:name=".service.AccessibilityAutomationService"
+            android:exported="false"
+            android:label="@string/accessibility_service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <service
+            android:name=".service.NotificationRelayService"
+            android:exported="true"
+            android:label="@string/notification_listener_label"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- Minimal autofill service (backlog #15): fills ONLY the user's own name/phone/e-mail
+             from a locally stored owner profile, and never captures data entered into other apps.
+             BIND_AUTOFILL_SERVICE makes the system the only possible binder; exported so the system
+             can bind once the user selects ANDharness in the autofill picker. The `android.autofill`
+             metadata points at the service config (settingsActivity = MainActivity), and the action
+             below is the mandatory AutofillService.SERVICE_INTERFACE.
+             https://developer.android.com/identity/autofill/autofill-services -->
+        <service
+            android:name=".service.AndharnessAutofillService"
+            android:exported="true"
+            android:label="@string/autofill_service_label"
+            android:permission="android.permission.BIND_AUTOFILL_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.autofill.AutofillService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.autofill"
+                android:resource="@xml/autofill_service" />
+        </service>
+
+        <!-- Call screening (update.md §2.2). A real CallScreeningService that ALWAYS allows the call
+             and does the heavy work (OSINT/chat/notification) asynchronously after responding.
+             `BIND_SCREENING_SERVICE` makes the platform the only possible binder. The system only
+             calls it while the app holds ROLE_CALL_SCREENING; without the role the delayed call-log
+             fallback (CallLogWatcherWorker) is used instead.
+             https://developer.android.com/reference/android/telecom/CallScreeningService -->
+        <service
+            android:name=".service.AndharnessCallScreeningService"
+            android:exported="true"
+            android:permission="android.permission.BIND_SCREENING_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.CallScreeningService" />
+            </intent-filter>
+        </service>
+
+        <!-- Assistant role (backlog #11). Minimal VoiceInteractionService skeleton: it exists so the
+             `role_request` flow can ask for `android.app.role.ASSISTANT` and, where the OEM actually
+             allows a third-party assistant, the system can bind this component. `BIND_VOICE_INTERACTION`
+             (a system signature permission) makes the platform the only possible binder; the
+             `android.voice_interaction` meta-data points at res/xml/voice_interaction_service.xml.
+             NOTE: the metadata intentionally has no `android:recognitionService`, which the platform's
+             VoiceInteractionServiceInfo also requires — see the XML comment. The service is therefore
+             an honest skeleton, not a claim that hold-home works on every build.
+             https://developer.android.com/reference/android/service/voice/VoiceInteractionService -->
+        <service
+            android:name=".service.AndharnessVoiceInteractionService"
+            android:exported="true"
+            android:permission="android.permission.BIND_VOICE_INTERACTION">
+            <intent-filter>
+                <action android:name="android.service.voice.VoiceInteractionService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.voice_interaction"
+                android:resource="@xml/voice_interaction_service" />
+        </service>
+
+        <!-- Session factory referenced by `android:sessionService` above. The platform binds it
+             explicitly by component (VoiceInteractionSessionConnection sets the component before
+             binding), so no intent-filter is needed; BIND_VOICE_INTERACTION keeps it system-only.
+             https://developer.android.com/reference/android/service/voice/VoiceInteractionSessionService -->
+        <service
+            android:name=".service.AndharnessVoiceInteractionSessionService"
+            android:exported="true"
+            android:permission="android.permission.BIND_VOICE_INTERACTION" />
+
+        <!-- SMS interception (update.md §2.3). Non-abortable: it never calls abortBroadcast and never
+             claims the default-SMS role, so the user's normal SMS client is unaffected. Guarded by
+             BROADCAST_SMS so only the system can send it; requires RECEIVE_SMS.
+             https://developer.android.com/reference/android/provider/Telephony.Sms.Intents#SMS_RECEIVED_ACTION -->
+        <receiver
+            android:name=".data.intercept.SmsReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".service.AndharnessDeviceAdminReceiver"
+            android:exported="true"
+            android:label="@string/device_admin_label"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".data.alarm.ExactAlarmReceiver"
+            android:exported="false" />
+
+        <!-- Callback for shortcut_pin (update.md §1): ShortcutManager.requestPinShortcut delivers
+             its result only when the user approves pinning. The docs recommend an unexported,
+             manifest-declared receiver for this callback; the broadcast is addressed to this
+             component explicitly, so no intent-filter is needed.
+             https://developer.android.com/reference/android/content/pm/ShortcutManager#requestPinShortcut(android.content.pm.ShortcutInfo,%20android.content.IntentSender) -->
+        <receiver
+            android:name=".service.ShortcutPinReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".data.alarm.BootCompletedReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Automation rules: `boot` trigger + re-arming persisted `time` rules after reboot
+             (update.md §11.6). BOOT_COMPLETED is on the Android 8+ manifest exemption list. -->
+        <receiver
+            android:name=".data.automation.AutomationBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Crash-restart alarm target (update.md §1.2). Non-exported: only the app's own
+             AlarmManager/WorkManager PendingIntent addresses it explicitly. -->
+        <receiver
+            android:name=".data.crash.RestartReceiver"
+            android:exported="false" />
+
+        <!-- Boot/self-update restart of the background core (update.md §1.3). RECEIVE_BOOT_COMPLETED
+             is declared above; MY_PACKAGE_REPLACED needs no extra permission. -->
+        <receiver
+            android:name=".data.core.WatchdogBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Device facts (TZ §12.2): invalidate the cache on reboot/self-update and on package
+             removal. The package-scheme intent filter is separate because a data element only
+             matches intents that carry that URI. -->
+        <receiver
+            android:name=".data.memory.DeviceFactsBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- Per-app language preferences. On Android 13+ (API 33+) the framework `LocaleManager`
+             stores the chosen language; on Android 12 and lower (API 31–32, given minSdk 31) AppCompat
+             must persist it, which `autoStoreLocales="true"` turns on. The service is `enabled=false`
+             (it is a metadata holder the AndroidX startup path reads, never bound by the system) and
+             not exported.
+             https://developer.android.com/guide/topics/resources/app-languages -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
+
+    </application>
+
+</manifest>

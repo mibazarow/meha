@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Меха</string>
+    <string name="accessibility_service_label">Меха — управление экраном</string>
+    <string name="accessibility_service_description">Позволяет агенту читать элементы на экране и выполнять действия (нажатия, свайпы, ввод текста) в любых приложениях по вашей команде.</string>
+    <string name="notification_listener_label">Меха — доступ к уведомлениям</string>
+    <string name="autofill_service_label">Меха — автозаполнение</string>
+    <string name="device_admin_label">Меха — администрирование устройства</string>
+
+    <!-- Inbound entry points (update.md idea #10) -->
+    <string name="share_target_label">Меха — в новый чат</string>
+    <string name="process_text_label">Спросить агента</string>
+    <!-- «Что это?» inbound target: share sheet (text/image) and text-selection toolbar. -->
+    <string name="explain_target_label">Спросить Меху: что это?</string>
+    <string name="tile_label">Меха</string>
+    <string name="widget_description">Меха: новый чат и последние чаты</string>
+    <string name="widget_subtitle">AI-ассистент</string>
+    <string name="widget_no_chats">Чатов пока нет — начните новый</string>
+    <string name="widget_new_chat">+ Новый чат</string>
+
+    <!-- Localization foundation (RU/EN): language switch in Settings + onboarding. The language
+         names («Русский» / «English») are a language's own name and are intentionally identical in
+         every locale, so they live in both values/ and values-en/ untranslated. -->
+    <string name="language_russian">Русский</string>
+    <string name="language_english">English</string>
+
+    <!-- Settings: «Язык» section -->
+    <string name="settings_language_title">Язык</string>
+    <string name="settings_language_label">Язык интерфейса</string>
+
+    <!-- Onboarding: extra-download notice, shown right above the final CTA -->
+    <string name="onboarding_download_notice_label">Скачивание</string>
+    <string name="onboarding_download_notice">После установки докачается около 1 ГБ моделей для офлайн-функций (семантический поиск по устройству; распознавание речи). Лучше по Wi-Fi.</string>
+
+    <!-- ============================ Settings screens (unified style) ============================ -->
+
+    <!-- Common actions/labels shared across Settings sections -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_cancel">Отмена</string>
+    <string name="settings_delete">Удалить</string>
+    <string name="settings_retry">Повторить</string>
+    <string name="settings_delete_model">Удалить модель</string>
+    <string name="settings_download_model">Скачать модель</string>
+    <string name="settings_model_downloading">Загрузка модели… %1$d%% (%2$s из %3$s)</string>
+    <string name="settings_model_verifying">Проверяю файл…</string>
+    <string name="settings_model_failed">Не удалось загрузить модель: %1$s</string>
+
+    <!-- Appearance -->
+    <string name="settings_theme_title">Оформление</string>
+    <string name="settings_theme_label">Тема</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Тёмная</string>
+    <string name="settings_theme_system">Как в системе</string>
+    <string name="settings_theme_hint">Светлая — всегда светлое оформление, тёмная — всегда тёмное; «Как в системе» следует настройке Android.</string>
+
+    <!-- Search (semantic) -->
+    <string name="settings_search_title">Поиск</string>
+    <string name="settings_semantic_label">Семантический поиск (эмбеддинги)</string>
+    <string name="settings_semantic_hint">Ищет по смыслу, а не только по словам: считается на устройстве и сажает батарею. Выключите — телефону легче, но поиск по памяти деградирует до поиска по словам.</string>
+    <string name="settings_style_title">Стиль общения</string>
+    <string name="settings_style_hint">Меха постепенно перенимает вашу манеру речи — обращение, длину ответов, сленг и эмоциональность. Это влияет только на форму, не на факты и действия.</string>
+    <string name="settings_style_mode_auto">Перенимать</string>
+    <string name="settings_style_mode_neutral">Нейтрально</string>
+    <string name="settings_style_mode_manual">Вручную</string>
+    <string name="settings_style_manual_label">Как общаться</string>
+    <string name="settings_style_manual_save">Сохранить</string>
+    <string name="settings_style_profanity_title">Крепкие слова</string>
+    <string name="settings_style_profanity_hint">Перенимать, только если вы сами так пишете. Без оскорблений и агрессии.</string>
+    <string name="settings_style_tone">Тон: %1$s</string>
+    <string name="settings_style_learned">Сейчас: %1$s</string>
+    <string name="settings_style_no_data">Пока мало данных — просто общайтесь как обычно.</string>
+    <string name="settings_style_samples">Основано на %1$d сообщениях</string>
+    <string name="settings_style_forget">Забыть стиль</string>
+    <string name="settings_style_address_ty">на «ты»</string>
+    <string name="settings_style_address_vy">на «вы»</string>
+    <string name="settings_style_brevity">коротко</string>
+    <string name="settings_style_slang">со сленгом</string>
+    <string name="settings_style_profanity">с крепкими словами</string>
+    <string name="settings_style_emoji">с эмодзи</string>
+    <string name="settings_style_punctuation">расслабленная пунктуация</string>
+    <string name="settings_style_directness">сразу по делу</string>
+    <string name="settings_style_humor">с лёгкой иронией</string>
+
+    <!-- Incoming SMS -->
+    <string name="settings_sms_title">Входящие SMS</string>
+    <string name="settings_sms_label">Обрабатывать входящие SMS</string>
+    <string name="settings_sms_hint">Приложение читает входящие SMS, чтобы реагировать на них: разбирает номер отправителя и создаёт чат для незнакомых номеров. Это общий переключатель перехвата событий (SMS и звонки). Нужно разрешение «SMS» на экране «Все разрешения».</string>
+
+    <!-- Communications («Связи») -->
+    <string name="settings_comm_title">Связи</string>
+    <string name="settings_comm_mode_label">Обработка записей и расшифровка</string>
+    <string name="settings_comm_mode_off">Выкл</string>
+    <string name="settings_comm_mode_charging">На зарядке</string>
+    <string name="settings_comm_mode_always">Всегда</string>
+    <string name="settings_comm_mode_hint">Когда приложение может автоматически сканировать записи диктофона и аудиофайлы и расшифровывать их на устройстве. По умолчанию — только на зарядке: расшифровка на телефоне расходует батарею, поэтому в фоне без питания она не запускается. Записывать телефонные звонки Android не позволяет - этого нет.</string>
+    <string name="settings_comm_cloud_label">Отправлять текст расшифровок в облако</string>
+    <string name="settings_comm_cloud_hint">Аудио никогда не покидает устройство; в облако может уйти только текст. Выключите, если хотите полностью локальный режим: тогда сводки в облаке не строятся, а поиск по расшифровкам работает только на телефоне.</string>
+    <string name="settings_comm_whisper_label">Модель распознавания речи</string>
+    <string name="settings_whisper_base">Whisper base (многоязычная)</string>
+    <string name="settings_whisper_small">Whisper small (многоязычная)</string>
+    <string name="settings_comm_whisper_desc">%1$s, размер %2$s. Скачивается один раз, дальше работает офлайн.</string>
+    <string name="settings_comm_downloaded">Модель загружена.</string>
+    <string name="settings_comm_keep_audio_days">Хранить аудио, дней</string>
+    <string name="settings_comm_cache_limit">Лимит аудиокеша, МБ</string>
+    <string name="settings_comm_retention_hint">Аудио хранится ограниченное время и вытесняется по лимиту кеша; расшифровки (текст) остаются в локальной базе.</string>
+    <string name="settings_comm_bg_minutes">Расшифровка в фоне, мин/день</string>
+    <string name="settings_comm_bg_minutes_hint">Сколько минут в сутки фоновый проход может тратить на расшифровку записей диктофона и аудиофайлов. Когда лимит исчерпан, обработка останавливается до следующего дня.</string>
+    <string name="settings_comm_privacy">Конфиденциальность и закон. Записывать телефонные звонки Android не позволяет - этого нет. Расшифровка аудио на устройстве: записи диктофона и аудиофайлы; голосовые сообщения мессенджеров (через захват звука с вашего подтверждения); диктовка в чате. Нужна скачанная модель распознавания. Постоянного прослушивания (ambient) нет. Запись разговоров регулируется законом: во многих странах и регионах записывать разговор можно только с согласия всех участников или уведомив их. Убедитесь, что не нарушаете местные правила.</string>
+
+    <!-- Overlay assistant -->
+    <string name="settings_overlay_title">Плавающий помощник</string>
+    <string name="settings_overlay_label">Пузырёк поверх других приложений</string>
+    <string name="settings_overlay_hint">Показывает небольшой перетаскиваемый пузырёк поверх других приложений: нажмите на него, чтобы спросить Меха, не выходя из текущего экрана. Долгое нажатие убирает пузырёк. Для этого нужно разрешение «Поверх других приложений» (SYSTEM_ALERT_WINDOW) — приложение показывает окно только после того, как вы выдадите его в системных настройках.</string>
+    <string name="settings_overlay_granted">Разрешение «Поверх других приложений» выдано.</string>
+    <string name="settings_overlay_not_granted">Разрешение «Поверх других приложений» не выдано.</string>
+
+    <!-- Overlay assistant UI (bubble + quick-ask panel) -->
+    <string name="overlay_bubble_cd">Плавающий помощник Меха</string>
+    <string name="overlay_bubble_glyph">М</string>
+    <string name="overlay_quick_ask_title">Спросить Меха</string>
+    <string name="overlay_quick_ask_close_cd">Скрыть помощника</string>
+    <string name="overlay_quick_ask_label">Вопрос или задача</string>
+    <string name="overlay_quick_ask_send">Отправить</string>
+    <string name="overlay_quick_ask_sending">Отправляю…</string>
+
+    <!-- Special access -->
+    <string name="settings_special_title">Доступ</string>
+    <string name="settings_permissions_btn">Все разрешения</string>
+    <string name="settings_special_access_hint">Здесь можно заранее выдать Мехе все разрешения на управление телефоном. Если не выдавать сразу, разрешения запрашиваются по мере необходимости.</string>
+
+    <!-- Updates -->
+    <string name="settings_updates_title">Обновления</string>
+    <string name="settings_updates_check">Проверить обновления</string>
+    <string name="settings_updates_checking">Проверка…</string>
+    <string name="settings_updates_downloading">Загрузка обновления…</string>
+    <string name="settings_updates_ready">Обновление готово к установке</string>
+    <string name="settings_updates_version">Версия %1$s (%2$d)</string>
+
+    <!-- Form actions -->
+    <string name="settings_save_saving">Сохранение…</string>
+    <string name="settings_save_saved">Сохранено</string>
+    <string name="settings_save">Сохранить</string>
+    <string name="settings_reset_button">Сбросить все данные</string>
+    <string name="settings_reset_dialog_title">Сброс всех данных</string>
+    <string name="settings_reset_dialog_text">Удалить все чаты и сбросить настройки LLM?</string>
+    <string name="settings_reset_confirm">Сбросить</string>
+
+    <!-- Navigation -->
+    <string name="settings_nav_title">Навигация</string>
+    <string name="settings_nav_row_title">Разделы</string>
+    <string name="settings_nav_row_subtitle">Память, навыки, связи и другие</string>
+
+    <!-- Provider connection screen -->
+    <string name="provider_title">Провайдеры</string>
+    <string name="provider_intro">Сохраните любое количество OpenAI-совместимых провайдеров — облачных или self-hosted. Активным может быть только один: выберите его в списке, и Меха начнёт использовать именно его.</string>
+    <string name="provider_saved_title">Сохранённые провайдеры</string>
+    <string name="provider_saved_empty">Пока нет сохранённых провайдеров. Заполните форму ниже и нажмите «Сохранить».</string>
+    <string name="provider_add">Добавить провайдера</string>
+    <string name="provider_name_label">Название (необязательно)</string>
+    <string name="provider_name_placeholder">Например, DeepSeek</string>
+    <string name="provider_badge_active">активен</string>
+    <string name="provider_badge_editing">редактируется</string>
+    <string name="provider_badge_active_editing">активен · редактируется</string>
+    <string name="provider_unnamed">Без названия</string>
+    <string name="provider_delete">Удалить провайдера</string>
+    <string name="provider_delete_dialog_title">Удаление провайдера</string>
+    <string name="provider_delete_dialog_text">Удалить «%1$s»? API-ключ этого провайдера тоже будет удалён с устройства.</string>
+
+    <!-- LLM connection -->
+    <string name="settings_llm_title">Подключение (LLM)</string>
+    <string name="settings_llm_endpoint">Адрес эндпоинта</string>
+    <string name="settings_llm_apikey_label">API-ключ</string>
+    <string name="settings_llm_apikey_hint">Ключ уходит только в запрос к провайдеру (Authorization: Bearer …). Для self-hosted сервера без ключа оставьте поле пустым.</string>
+    <string name="settings_llm_delete_key">Удалить ключ</string>
+    <string name="settings_llm_auth_style">Способ авторизации</string>
+    <string name="settings_llm_auth_bearer">Bearer (по умолчанию)</string>
+    <string name="settings_llm_auth_header">Свой заголовок</string>
+    <string name="settings_llm_auth_query">Query-параметр</string>
+    <string name="settings_llm_auth_none">Без авторизации</string>
+    <string name="settings_llm_header_name">Имя заголовка</string>
+    <string name="settings_llm_query_name">Имя query-параметра</string>
+    <string name="settings_llm_model_name">Имя модели</string>
+    <string name="settings_llm_models_list">Список моделей</string>
+    <string name="settings_llm_loading">Загрузка…</string>
+    <string name="settings_llm_refresh">Обновить список</string>
+    <string name="settings_llm_hint_fill">Введите endpoint и API-ключ (если нужен), затем нажмите «Обновить список».</string>
+    <string name="settings_llm_models_unavailable">Список моделей недоступен — введите имя вручную.</string>
+    <string name="settings_context_unknown">неизвестно</string>
+    <string name="settings_tokens_value">%1$d токенов</string>
+    <string name="settings_llm_context_plain">Контекст модели: %1$s</string>
+    <string name="settings_llm_context_reported">Провайдер сообщил максимум контекста: %1$d токенов. Используем его полностью; автосжатие — при 80%% (%2$d).</string>
+    <string name="settings_llm_context_not_reported">Провайдер не сообщил максимум контекста — используем %1$d токенов (автосжатие при 80%%: %2$d).</string>
+    <string name="settings_llm_max_context_label">Максимальный контекст, токенов</string>
+    <string name="settings_llm_max_context_known">До %1$d токенов (максимум модели)</string>
+    <string name="settings_llm_max_context_auto">Автоопределение; оставьте пустым</string>
+    <string name="settings_llm_context_manual_hint">Разные провайдеры сообщают максимум окна контекста в разных полях — автоматически проверить все невозможно. Если вы уверены, что ваш провайдер отдаёт больше (или меньше), впишите значение сами. Если определить не удалось — используется 100 000 токенов.</string>
+    <string name="settings_reasoning_title">Режим размышлений (reasoning)</string>
+    <string name="settings_reasoning_off">Выкл</string>
+    <string name="settings_llm_delete_key_dialog_title">Удаление API-ключа</string>
+    <string name="settings_llm_delete_key_dialog_text">Удалить сохранённый API-ключ с этого устройства? Восстановить его будет нельзя.</string>
+
+    <!-- Updater dialogs -->
+    <string name="update_available_title">Доступна версия %1$s</string>
+    <string name="update_size">Размер: %1$s. Загрузка займёт время, установку нужно будет подтвердить.</string>
+    <string name="update_mandatory">Это обновление обязательно для продолжения работы.</string>
+    <string name="update_button">Обновить</string>
+    <string name="update_later">Позже</string>
+    <string name="update_download_title">Загрузка обновления</string>
+    <string name="update_progress_desc">Загрузка обновления: %1$d%%</string>
+    <string name="update_progress">Загружено %1$d%% (%2$s из %3$s)</string>
+    <string name="update_progress_desc_unknown">Загрузка обновления</string>
+    <string name="update_progress_unknown">Загрузка… %1$s</string>
+    <string name="update_permission_title">Нужно разрешить установку</string>
+    <string name="update_permission_text">Чтобы установить обновление, разрешите этому приложению устанавливать приложения из этого источника. После разрешения вернитесь и нажмите «Разрешить» ещё раз.</string>
+    <string name="update_allow">Разрешить</string>
+    <string name="update_install_title">Установить обновление?</string>
+    <string name="update_install_text">Обновление скачано и проверено. Откроется системный установщик — подтвердите установку.</string>
+    <string name="update_install">Установить</string>
+
+    <!-- In-chat device_search result previews -->
+    <string name="chat_search_results_title">Найдено на устройстве</string>
+    <string name="chat_search_result_open">Открыть</string>
+    <string name="chat_search_result_document">Документ</string>
+    <string name="chat_search_result_file">Файл</string>
+
+    <!-- Shared chrome: internal & chat top bars -->
+    <string name="nav_back_cd">Назад</string>
+    <string name="chat_topbar_search_cd">Поиск по чату</string>
+
+    <!-- Chat composer / attachments / in-chat search -->
+    <string name="chat_composer_attach_cd">Прикрепить файл</string>
+    <string name="chat_composer_attach_image">Изображение</string>
+    <string name="chat_composer_attach_camera">Сделать фото</string>
+    <string name="chat_composer_placeholder">Сообщение</string>
+    <string name="chat_composer_stop_cd">Остановить генерацию</string>
+    <string name="chat_composer_dictate_cd">Диктовать (удерживайте)</string>
+    <string name="chat_dictation_listening_cd">Идёт запись — отпустите, чтобы вставить текст</string>
+    <string name="chat_dictation_unavailable">Распознавание речи недоступно на устройстве.</string>
+    <string name="chat_dictation_no_speech">Речь не распознана. Попробуйте ещё раз.</string>
+    <string name="chat_dictation_permission">Нет разрешения на микрофон — диктовка недоступна.</string>
+    <string name="chat_dictation_press_again">Разрешение выдано — нажмите и удерживайте микрофон.</string>
+    <string name="chat_attachment_size_unknown">размер неизвестен</string>
+    <string name="chat_attachment_load_failed">не удалось загрузить</string>
+    <string name="chat_attachment_remove_cd">Убрать вложение</string>
+    <string name="chat_search_close_cd">Закрыть поиск</string>
+    <string name="chat_search_empty">Ничего не найдено</string>
+
+    <!-- Chat screen: status lines + message bubble accessibility -->
+    <string name="chat_title_fallback">Чат</string>
+    <string name="chat_background_prefix">В фоне: %1$s</string>
+    <string name="chat_queued_in_line">Ваш запрос принят и ждёт свободный слот агента — он выполнится автоматически.</string>
+    <string name="chat_speak_message_cd">Озвучить сообщение</string>
+    <string name="chat_copy_reply">Скопировать ответ</string>
+    <string name="chat_copy_reply_copied">Скопировано</string>
+
+    <!-- ============================ Chat list screen (unified style) ============================ -->
+    <string name="chat_list_empty">Пока нет чатов — начните новый</string>
+    <string name="chat_search_label">Поиск по чатам</string>
+    <string name="chat_search_title_match">Совпадение в названии</string>
+    <string name="chat_delete_dialog_text">Вы действительно хотите удалить этот чат? Действие необратимо.</string>
+    <string name="chat_new_chat">Новый чат</string>
+    <string name="chat_nav_base">База</string>
+    <string name="chat_pin_cd">Закрепить</string>
+    <string name="chat_unpin_cd">Открепить</string>
+    <string name="chat_delete_cd">Удалить чат</string>
+    <string name="chat_no_messages">Нет сообщений</string>
+    <string name="chat_preview_you_prefix">Вы: %1$s</string>
+
+    <!-- ============================ Home hub (unified style) ============================ -->
+    <string name="home_section_connection">Подключение</string>
+    <string name="home_section_main">Основное</string>
+    <string name="home_section_automation">Автоматизации</string>
+    <string name="home_section_more">Ещё</string>
+    <string name="home_configure">Настроить</string>
+    <string name="home_row_chats">Чаты</string>
+    <string name="home_row_chats_sub">Все диалоги с агентом</string>
+    <string name="home_row_schedules">Задачи по расписанию</string>
+    <string name="home_row_schedules_sub">Запуск агента по времени</string>
+    <string name="home_row_automation">Правила автоматизации</string>
+    <string name="home_row_automation_sub">Событие телефона → действие агента</string>
+    <string name="home_row_skills">Навыки</string>
+    <string name="home_row_skills_sub">Повторяемые сценарии приложений</string>
+    <string name="home_row_suggestions">Подсказки</string>
+    <string name="home_row_suggestions_sub">Идеи автоматизаций</string>
+    <string name="home_row_provider">Подключение к провайдеру</string>
+    <string name="home_row_provider_sub">Провайдер (OpenAI-совместимый)</string>
+    <string name="home_row_database">Просмотр базы</string>
+    <string name="home_row_database_sub">Записи агента и история</string>
+    <string name="home_row_memory">Что агент помнит</string>
+    <string name="home_row_memory_sub">Долговременная память агента</string>
+    <string name="home_row_activity">Что агент сделал</string>
+    <string name="home_row_activity_sub">Отчёт о работе и отмена действий</string>
+    <string name="home_row_comms">Связи</string>
+    <string name="home_row_comms_sub">Записи, расшифровки и поиск</string>
+    <string name="home_row_people">Люди</string>
+    <string name="home_row_people_sub">Профили и история общения</string>
+    <string name="home_row_settings">Настройки</string>
+    <string name="home_row_settings_sub">Модель, разрешения, тема</string>
+    <string name="home_footer_copyright">© 2026 Разработка Михаил Базаров</string>
+
+    <!-- ============================ Memory screen (unified style) ============================ -->
+    <string name="memory_section_about_title">Что это</string>
+    <string name="memory_intro">Долговременная память агента: факты и предпочтения, которые он сохранил инструментом memory_save или при разборе уведомлений. Память переживает перезапуск приложения. Удаление необратимо.</string>
+    <string name="memory_search_label">Поиск по памяти</string>
+    <string name="memory_search_clear">Очистить поиск</string>
+    <string name="memory_loading">Загрузка…</string>
+    <string name="memory_searching">Поиск…</string>
+    <string name="memory_empty_search">Ничего не найдено</string>
+    <string name="memory_empty">Память пока пуста</string>
+    <string name="memory_delete_one">Удалить из памяти</string>
+    <string name="memory_forget_all">Забыть всё</string>
+    <string name="memory_forget_dialog_title">Забыть всё</string>
+    <string name="memory_forget_dialog_text">Удалить всю долговременную память агента? Это необратимо — восстановить заметки будет нельзя.</string>
+    <string name="memory_forget_confirm">Забыть</string>
+
+    <!-- ============================ Scheduled tasks screen (unified style) ============================ -->
+    <string name="schedule_section_about_title">Что это</string>
+    <string name="schedule_intro">Задачи по расписанию агент выполняет сам, по времени. Например: каждое утро присылать сводку погоды. Создать задачу можно в чате — просто попросите. Одноразовые напоминания исчезают после выполнения.</string>
+    <string name="schedule_open_chats">Открыть чаты</string>
+    <string name="schedule_loading">Загрузка…</string>
+    <string name="schedule_empty">Задач по расписанию нет — попросите агента создать задачу в чате</string>
+    <string name="schedule_delete">Удалить задачу</string>
+
+    <!-- ============================ Suggestions screen (unified style) ============================ -->
+    <string name="suggestions_section_about_title">Что это</string>
+    <string name="suggestions_intro">Подсказки — это автоматизации, которые агент предлагает по вашей истории использования приложений, например «открываешь Telegram около 08:00». Подсказку можно скрыть или сразу превратить в правило.</string>
+    <string name="suggestions_empty">Подсказок нет.\n\nЛибо данных за последние две недели пока мало для уверенного шаблона, либо все найденные подсказки уже приняты или скрыты.</string>
+    <string name="suggestions_usage_access">Нет доступа к данным об использовании.\n\nПодсказки строятся по истории запусков приложений. Выдайте «Доступ к данным об использовании» для Меха в настройках Android и вернитесь на этот экран.</string>
+    <string name="suggestions_open_settings">Открыть настройки</string>
+    <string name="suggestions_confidence">Уверенность: %1$d%% · %2$d из %3$d дней · правило: когда %4$s, уведомление</string>
+    <string name="suggestions_dismiss">Скрыть</string>
+    <string name="suggestions_creating">Создаю…</string>
+    <string name="suggestions_create_rule">Создать правило</string>
+
+    <!-- ============================ Skills library screen (unified style) ============================ -->
+    <string name="skills_section_about_title">Что это</string>
+    <string name="skills_intro">Навыки — повторяемые сценарии приложений, сохранённые агентом (инструмент skill_save). Запуск выполняется через службу спецвозможностей Меха; удаление необратимо.</string>
+    <string name="skills_search_label">Поиск по навыкам</string>
+    <string name="skills_running">Выполняется «%1$s»…</string>
+    <string name="skills_empty_search">Ничего не найдено по запросу «%1$s».</string>
+    <string name="skills_empty">Сохранённых навыков нет. Их можно создать через агента или записать.</string>
+    <string name="skills_run_skill_cd">Запустить навык «%1$s»</string>
+    <string name="skills_delete_skill_cd">Удалить навык «%1$s»</string>
+    <string name="skills_delete_title">Удалить навык</string>
+    <string name="skills_delete_text">Удалить навык «%1$s»? Это необратимо.</string>
+    <string name="skills_report_success">Навык выполнен</string>
+    <string name="skills_report_failure">Навык не выполнен</string>
+    <string name="skills_close">Закрыть</string>
+    <string name="skills_params_title">Параметры</string>
+    <string name="skills_no_params">В этом навыке нет параметров.</string>
+    <string name="skills_steps_title">Шаги</string>
+    <string name="skills_no_steps">В этом навыке нет шагов.</string>
+    <string name="skills_edit_title">Изменить навык</string>
+    <string name="skills_edit_name">Имя</string>
+    <string name="skills_edit_description">Описание</string>
+    <string name="skills_edit_hint">Редактирование шагов выполняется агентом (инструмент skill_save).</string>
+    <string name="skills_run_title">Запустить «%1$s»</string>
+    <string name="skills_run_choices">допустимо: %1$s</string>
+    <string name="skills_run_hint">Поля со * обязательны. Пустые необязательные поля берут значение по умолчанию.</string>
+    <string name="skills_run_confirm">Запустить</string>
+
+    <!-- ============================ Automation rules screen (unified style) ============================ -->
+    <string name="automation_section_about_title">Что это</string>
+    <string name="automation_intro">Правило автоматизации — это реакция агента на событие телефона: уведомить, когда рядом появилась открытая Wi-Fi сеть, или запустить задачу при низком заряде. Правила создаёт агент в чате; здесь их можно включить, выключить или удалить.</string>
+    <string name="automation_empty">Правил автоматизации нет.\n\nПравила создаёт агент: попросите в чате добавить правило — например «включи уведомление, когда придёт сообщение». Здесь их можно только включить, выключить или удалить.</string>
+    <string name="automation_footer">Правила создаются агентом в чате (инструмент automation_rule_create). Здесь их можно включить, выключить или удалить.</string>
+    <string name="automation_when">Когда: %1$s</string>
+    <string name="automation_action">Действие: %1$s</string>
+    <string name="automation_enabled">включено</string>
+    <string name="automation_disabled">выключено</string>
+    <string name="automation_enable_rule_cd">Включить правило %1$s</string>
+    <string name="automation_disable_rule_cd">Отключить правило %1$s</string>
+    <string name="automation_delete_rule_cd">Удалить правило</string>
+
+    <!-- ============================ Permissions screen (unified style) ============================ -->
+    <string name="permissions_section_about_title">Что это</string>
+    <string name="permissions_intro">Разрешения запрашиваются только при первом использовании соответствующего инструмента. Здесь можно заранее включить или проверить любое разрешение.</string>
+    <string name="permissions_granted">Разрешено</string>
+    <string name="permissions_denied">Не разрешено</string>
+    <string name="permissions_special">Особая</string>
+    <string name="permissions_request">Запросить</string>
+    <string name="permissions_special_access_title">Особые доступы</string>
+    <string name="permissions_special_access_hint">Эти доступы выдаются в настройках Android.</string>
+    <string name="permissions_restricted_title">Если переключатель не включается</string>
+    <string name="permissions_restricted_hint">На Android 13+ система блокирует «Специальные возможности» и «Доступ к уведомлениям» для приложений не из магазина. Откройте Настройки → Приложения → Меха → «⋮» → «Разрешить ограниченные настройки» и повторите. Это защита Android, а не ошибка Мехи.</string>
+
+    <!-- Agent-activity result labels (shared) -->
+    <string name="audit_success">Успешно</string>
+    <string name="audit_error">Ошибка</string>
+
+    <!-- ============================ Agent activity screen (unified style) ============================ -->
+    <string name="activity_section_about_title">Как это работает</string>
+    <string name="activity_intro">Здесь собрано, что агент делал на телефоне: инструмент, время и результат. Отменить можно только действия с обратной операцией — например, создание заметки, задачи или записи памяти; остальные остаются в истории и отмене не подлежат.</string>
+    <string name="activity_refresh_cd">Обновить отчёт</string>
+    <string name="activity_empty">Пока пусто — агент ещё ничего не делал</string>
+    <string name="activity_empty_hint">Здесь появятся действия агента; отменить можно только те, у которых есть обратная операция.</string>
+    <string name="activity_start_chat">Начать в чате</string>
+    <string name="activity_undo">Отменить</string>
+    <string name="activity_undoing">Отменяю…</string>
+
+    <!-- ============================ Database viewer screen (unified style) ============================ -->
+    <string name="db_section_about_title">Что это</string>
+    <string name="db_intro">Только просмотр. Добавить, изменить или удалить записи из интерфейса нельзя — это можно сделать только через агента в чате.</string>
+    <string name="db_empty_base">База пуста</string>
+    <string name="db_no_rows">Записей нет — данные появятся, когда агент их создаст</string>
+    <string name="db_big_table">большая таблица</string>
+    <string name="db_page_of">страница %1$d из %2$d</string>
+    <string name="db_read_only">только чтение</string>
+    <string name="db_prev">‹ Назад</string>
+    <string name="db_next">Вперёд ›</string>
+
+    <!-- ============================ Communications group (unified style) ============================ -->
+    <!-- «Связи» -->
+    <string name="comm_section_about_title">Что это</string>
+    <string name="comm_intro">Локальные записи и их расшифровки: записи диктофона, аудиофайлы и голосовые сообщения мессенджеров (через захват звука с вашего подтверждения). Записывать телефонные звонки Android не позволяет - этого нет. Аудио никогда не уходит с устройства — речь распознаётся на телефоне; нужна скачанная модель распознавания. Если включена отправка текста в облако, уходит только текст расшифровки.</string>
+    <string name="comm_search_label">Поиск по расшифровкам</string>
+    <string name="comm_search_support">Поиск охватывает только проиндексированные расшифровки.</string>
+    <string name="comm_search_clear">Очистить поиск</string>
+    <string name="comm_import_audio">Импортировать аудио</string>
+    <string name="comm_model_not_downloaded">Модель не скачана</string>
+    <string name="comm_loading">Загрузка…</string>
+    <string name="comm_searching">Поиск…</string>
+    <string name="comm_empty_search">Ничего не найдено</string>
+    <string name="comm_no_audio_permission">Нет доступа к аудиофайлам устройства. Выдайте разрешение или импортируйте файл вручную.</string>
+    <string name="comm_open_settings">Открыть настройки</string>
+    <string name="comm_empty_no_model">Записей пока нет. Для расшифровки сначала скачайте модель на устройство.</string>
+    <string name="comm_empty">Записей пока нет. Импортируйте аудио или дайте доступ к аудиофайлам.</string>
+    <string name="comm_transcribing">Расшифровка…</string>
+    <string name="comm_transcribe">Расшифровать</string>
+    <string name="comm_kept">Оставлено</string>
+    <string name="comm_keep">Оставить</string>
+    <string name="comm_delete_recording">Удалить запись</string>
+    <string name="comm_delete_dialog_text">Удалить «%1$s» вместе с её расшифровкой? Это необратимо.</string>
+
+    <!-- «Люди» -->
+    <string name="people_section_about_title">Что это</string>
+    <string name="people_intro">Люди, которых агент знает из звонков, СМС, мессенджеров и расшифровок. Откройте человека, чтобы увидеть историю общения и то, что агент о нём помнит.</string>
+    <string name="people_search_label">Поиск по имени</string>
+    <string name="people_search_support">Поиск идёт по имени человека в персональной базе.</string>
+    <string name="people_search_clear">Очистить поиск</string>
+    <string name="people_loading">Загрузка…</string>
+    <string name="people_searching">Поиск…</string>
+    <string name="people_empty_search">Ничего не найдено</string>
+    <string name="people_empty">Людей пока нет. Агент добавит их при разборе звонков, СМС и мессенджеров.</string>
+
+    <!-- Профиль человека -->
+    <string name="person_title_fallback">Человек</string>
+    <string name="person_loading">Загрузка…</string>
+    <string name="person_not_found">Человек не найден.</string>
+    <string name="person_about_title">О человеке</string>
+    <string name="person_empty">Пока нет событий: звонков, СМС, расшифровок и заметок о человеке.</string>
+
+    <!-- Расшифровка записи -->
+    <string name="transcript_title_fallback">Расшифровка</string>
+    <string name="transcript_recording_title">Запись</string>
+    <string name="transcript_recording_not_found">Запись не найдена.</string>
+    <string name="transcript_local_hint">Аудио остаётся на устройстве; расшифровка выполняется локально.</string>
+    <string name="transcript_loading">Загрузка…</string>
+    <string name="transcript_empty">Расшифровки пока нет.</string>
+    <string name="transcript_model_hint">Сначала скачайте модель расшифровки в настройках.</string>
+    <string name="transcript_speaker_dialog_title">Кто это сказал</string>
+    <string name="transcript_speaker_name_label">Имя говорящего</string>
+    <string name="transcript_save_name">Сохранить имя</string>
+    <string name="transcript_mark_self">Это я</string>
+    <string name="transcript_open_person">Открыть профиль человека</string>
+    <string name="transcript_link_person_title">Привязать к человеку</string>
+    <string name="transcript_no_persons">Нет сохранённых людей.</string>
+    <string name="transcript_done">Готово</string>
+    <string name="transcript_error_prefix">Ошибка: %1$s</string>
+    <string name="transcript_status_prefix">Статус: %1$s</string>
+
+    <!-- ============================ Provider screen (unified style) ============================ -->
+    <string name="provider_section_about_title">Что это</string>
+    <string name="settings_reasoning_low">Низкий</string>
+    <string name="settings_reasoning_medium">Средний</string>
+    <string name="settings_reasoning_high">Высокий</string>
+
+    <!-- ============================ Onboarding (unified style) ============================ -->
+    <string name="onboarding_intro">Привет! Меха — AI-агент, который управляет вашим телефоном. Настройте подключение к модели, и мы начнём.</string>
+    <string name="onboarding_model_title">Модель</string>
+    <string name="onboarding_models_hint_fill">Введите адрес и API-ключ — список моделей загрузится автоматически.</string>
+    <string name="onboarding_local_note">Можно работать полностью офлайн с моделью на устройстве: скачивается один раз и не требует интернета. Настраивается в «Настройках», нужно ≥ 11 ГБ ОЗУ.</string>
+    <string name="onboarding_permissions_title">Разрешения</string>
+    <string name="onboarding_permissions_body">Разрешения запрашиваются по мере использования — когда агенту впервые понадобится соответствующий инструмент. Полный список и управление — на экране «Все разрешения» в настройках. Каждое разрешение можно отклонить — тогда агент просто не сможет использовать этот инструмент. На Android 13+ система может не давать включить «Специальные возможности» и «Доступ к уведомлениям»: тогда в карточке приложения нажмите «⋮» → «Разрешить ограниченные настройки».</string>
+    <string name="onboarding_permissions_open">Открыть «Все разрешения»</string>
+    <string name="onboarding_continue">Продолжить</string>
+
+    <!-- ============================ License screen (unified style) ============================ -->
+    <string name="license_title">Лицензионное соглашение</string>
+    <string name="license_warning_title">Внимание</string>
+    <string name="license_warning_body">ВНИМАНИЕ. Приложение получает ПОЛНЫЙ доступ к вашему устройству и данным и выполняет действия от вашего имени. Используйте его только на свой страх и риск.</string>
+    <string name="license_conditions_title">Условия</string>
+    <string name="license_term_1">Приложение предоставляется «как есть», без каких-либо гарантий — явных или подразумеваемых.</string>
+    <string name="license_term_2">Автор не несёт ответственности за любые последствия использования: потерю или повреждение данных, удаление файлов, сбои, ошибки, нежелательные действия, расходы, утечку данных, блокировку устройства и любые иные прямые или косвенные убытки.</string>
+    <string name="license_term_3">Приложение может иметь полный доступ к файлам, контактам, сообщениям, звонкам, камере, микрофону, местоположению, уведомлениям, экрану и системным настройкам и может выполнять действия без дополнительного подтверждения — в том числе изменять и удалять данные.</string>
+    <string name="license_term_4">Вы используете приложение на свой страх и риск и несёте ПОЛНУЮ ответственность за все действия, выполненные вами или агентом по вашей команде.</string>
+    <string name="license_term_5">Для работы могут использоваться сторонние LLM-провайдеры: часть данных (ваши сообщения и переданное агенту содержимое) отправляется на выбранный вами сервис. Автор не контролирует эти сервисы и не отвечает за обработку данных на их стороне.</string>
+    <string name="license_term_6">Приложение может содержать ошибки и совершать непредсказуемые действия. Перед использованием на важных данных сделайте резервную копию.</string>
+    <string name="license_term_7">Нажимая «Принять», вы подтверждаете, что ознакомились с условиями и принимаете их полностью. Если вы не согласны — закройте приложение.</string>
+    <string name="license_term_8">Автор вправе изменять условия; актуальная версия показывается при первом запуске после изменений.</string>
+    <string name="license_footer">Продолжая, вы подтверждаете, что действуете на свой страх и риск.</string>
+    <string name="license_accept">Принять и продолжить</string>
+    <string name="license_decline">Отказаться и выйти</string>
+</resources>

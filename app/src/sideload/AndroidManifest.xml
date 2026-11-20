@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Distribution source set: the in-app updater needs to hand a downloaded APK to the system
+  installer, so this permission lives here rather than in the main manifest. See UPDATER.md.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+</manifest>

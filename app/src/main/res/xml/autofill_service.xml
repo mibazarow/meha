@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Metadata for the ANDharness autofill service (backlog #15). The only meaningful setting is which
+  activity the system opens when the user taps the gear icon next to ANDharness in the autofill
+  picker; the app has a single entry point, so MainActivity is used.
+  https://developer.android.com/identity/autofill/autofill-services
+-->
+<autofill-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:settingsActivity="com.andharness.ru.MainActivity" />

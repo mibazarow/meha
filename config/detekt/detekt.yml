@@ -1,0 +1,96 @@
+# Focused detekt configuration for the Meha Android app.
+#
+# REPORT-ONLY for now: see app/build.gradle.kts. detekt is NOT wired into `check`/`build` and
+# `ignoreFailures = true`, so these findings never fail a build until they are fixed incrementally.
+#
+# This file is self-contained: `buildUponDefaultConfig = false`, and a rule's `active` flag
+# defaults to FALSE, so ONLY the rules explicitly enabled below run. Everything else (noisy style,
+# complexity, naming, comments, formatting, magic numbers) is intentionally off.
+#
+# Docs: https://detekt.dev/docs/1.23.8/introduction/configurations/
+# Defaults reference: https://github.com/detekt/detekt/blob/v1.23.8/detekt-core/src/main/resources/default-detekt-config.yml
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+# --- Rule sets we keep fully OFF (documented explicitly to avoid accidental activation) ---
+comments:
+  active: false
+complexity:
+  active: false
+coroutines:
+  active: false
+empty-blocks:
+  active: false
+exceptions:
+  active: false
+naming:
+  active: false
+performance:
+  active: false
+
+# --- Primary focus: unused code and redundant visibility ---
+style:
+  active: true
+  UnusedImports:
+    active: true
+  UnusedPrivateMember:
+    active: true
+  UnusedPrivateProperty:
+    active: true
+    allowedNames: '_|ignored|expected|serialVersionUID'
+  # Function parameters that are never referenced. Override/interface parameters are normally
+  # still referenced; allowedNames covers deliberately unused names. Tune/disable if too noisy.
+  UnusedParameter:
+    active: true
+    allowedNames: 'ignored|expected'
+  # NOTE: the YAML key is the rule's issue id, which for this rule keeps the "Rule" suffix.
+  RedundantVisibilityModifierRule:
+    active: true
+
+# --- Correctness basics: detekt's default-on potential-bugs rules ---
+potential-bugs:
+  active: true
+  AvoidReferentialEquality:
+    active: true
+  DoubleMutabilityForCollection:
+    active: true
+  EqualsAlwaysReturnsTrueOrFalse:
+    active: true
+  EqualsWithHashCodeExist:
+    active: true
+  ExplicitGarbageCollectionCall:
+    active: true
+  HasPlatformType:
+    active: true
+  IgnoredReturnValue:
+    active: true
+  ImplicitDefaultLocale:
+    active: true
+  InvalidRange:
+    active: true
+  IteratorHasNextCallsNextMethod:
+    active: true
+  IteratorNotThrowingNoSuchElementException:
+    active: true
+  MapGetWithNotNullAssertionOperator:
+    active: true
+  UnnecessaryNotNullOperator:
+    active: true
+  UnnecessarySafeCall:
+    active: true
+  UnreachableCatchBlock:
+    active: true
+  UnreachableCode:
+    active: true
+  UnsafeCallOnNullableType:
+    active: true
+  UnsafeCast:
+    active: true
+  UnusedUnaryOperator:
+    active: true
+  UselessPostfixExpression:
+    active: true
+  WrongEqualsTypeParameter:
+    active: true

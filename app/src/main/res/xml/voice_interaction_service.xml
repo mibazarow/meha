@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Metadata for the ANDharness voice interaction (assistant) service (backlog #11). The platform
+  reads this through the `android.voice_interaction` meta-data on
+  `com.andharness.ru.service.AndharnessVoiceInteractionService`; the root tag must be exactly
+  `voice-interaction-service`.
+  Attributes:
+  - `android:sessionService` — the VoiceInteractionSessionService that creates the session
+    (`VoiceInteractionServiceInfo.getSessionService()`); required.
+  - `android:supportsAssist` — needed so the framework treats ANDharness as an assist target for the
+    hold-home / assist gesture.
+  `android:recognitionService` is deliberately NOT declared: the platform's
+  `VoiceInteractionServiceInfo` also requires it, but ANDharness ships no RecognitionService and
+  voice/recognition is intentionally out of scope (hands-free voice lives in the app UI), so
+  declaring a component that does not exist would be a fake promise. Consequence, stated honestly:
+  on stock AOSP-derived builds the platform treats this metadata as invalid ("No recognitionService
+  specified") and the assistant role will not actually be selectable, regardless of what the OEM's
+  RoleManager reports.
+  https://developer.android.com/reference/android/service/voice/VoiceInteractionService
+  https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/core/java/android/service/voice/VoiceInteractionServiceInfo.java
+-->
+<voice-interaction-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:sessionService="com.andharness.ru.service.AndharnessVoiceInteractionSessionService"
+    android:supportsAssist="true" />

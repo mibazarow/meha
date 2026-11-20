@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Data extraction rules for Android 12+ (API 31+), applied via android:dataExtractionRules.
+  Mirrors backup_rules.xml so the same minimal, secret-free set of preferences is restored both
+  from cloud backup and during device-to-device transfer (update.md idea #8).
+
+  Only non-secret preference files are included. The API key and SSH passwords live in
+  Keystore-backed EncryptedSharedPreferences and are never extracted.
+
+  Because at least one <include> element is present, the system extracts ONLY the files explicitly
+  included below; every other path is excluded by default. Declaring <exclude> elements for those
+  other paths is therefore redundant, and lint rejects an <exclude> that is not nested inside a
+  matching <include> ("is not in an included path"). The paths that must never be extracted are
+  documented here instead of declared as <exclude>:
+    sharedpref: andharness_ssh_secrets.xml, andharness_ssh_known_hosts.xml,
+                andharness_encrypted_prefs.xml, andharness_db_encryption.xml,
+                andharness_osint.xml, andharness_intercept.xml;
+    database/ and file/ entirely.
+
+  Reference: https://developer.android.com/guide/topics/manifest/data-extraction-rules-element
+             https://developer.android.com/identity/data/autobackup#IncludingFiles
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="sharedpref" path="andharness_model_context.xml" />
+        <include domain="sharedpref" path="andharness_watchdog.xml" />
+        <include domain="sharedpref" path="andharness_vision.xml" />
+        <include domain="sharedpref" path="andharness_person_index.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="sharedpref" path="andharness_model_context.xml" />
+        <include domain="sharedpref" path="andharness_watchdog.xml" />
+        <include domain="sharedpref" path="andharness_vision.xml" />
+        <include domain="sharedpref" path="andharness_person_index.xml" />
+    </device-transfer>
+</data-extraction-rules>

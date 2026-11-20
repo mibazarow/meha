@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  FileProvider path scope (audit S2): expose ONLY app-owned directories, never the whole
+  shared-storage root. Path elements and their semantics:
+  https://developer.android.com/reference/androidx/core/content/FileProvider
+
+  - <files-path>/<cache-path>: internal app-private storage (exports, downloads, staging, camera temp).
+  - <external-files-path>: the app-specific external dir (/Android/data/<pkg>/files).
+  - <external-path>: explicit app-owned sub-directories of shared storage. The former
+    `<external-path name="shared" path="."/>` exposed all of /storage/emulated/0 and is removed.
+
+  A file outside these roots is copied into the app cache before being shared
+  (see SharedFileContent.providerAccessibleFile), so the provider config never has to widen.
+-->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Internal app-private storage: <filesDir>/exports, etc. -->
+    <files-path name="internal" path="." />
+    <!-- Internal cache: downloaded APKs, camera captures, staged copies of shared files. -->
+    <cache-path name="cache" path="." />
+    <!-- App-specific external storage (/Android/data/<pkg>/files). -->
+    <external-files-path name="app_external" path="." />
+    <!-- App-owned public output directories (only these explicit sub-directories). -->
+    <external-path name="meha_pictures" path="Pictures/Meha" />
+    <external-path name="meha_dcim" path="DCIM/Meha" />
+    <external-path name="meha_music" path="Music/Meha" />
+    <external-path name="meha_documents" path="Documents/Meha" />
+</paths>

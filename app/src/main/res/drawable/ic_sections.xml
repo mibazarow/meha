@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- «Разделы» bottom-bar destination glyph: Material `grid_view` (a 2x2 tile grid) standing for the
+     Home hub's sections (Memory / Scheduled tasks / Automation rules / Skills / Communications / …).
+     The base Compose Material icon set ships no grid/apps glyph, so it lives here. Tinted by the
+     caller. Android vectors —
+     https://developer.android.com/develop/ui/views/graphics/vector-drawable-resources -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M3,3v8h8V3H3zM13,3v8h8V3h-8zM3,13v8h8v-8H3zM13,13v8h8v-8h-8z" />
+</vector>
