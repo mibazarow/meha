@@ -332,6 +332,27 @@ internal class DocumentInspector(
         )
     }
 
+    /**
+     * Resolves the worksheet the caller asked for ([requested]; `null`/empty means the first sheet)
+     * to its XML entry and text. Every failing step returns [SheetTarget.Failure] with the message
+     * the worksheet-editing tools surface, so all of them resolve a sheet the same way.
+     */
+    fun resolveSheetTarget(file: File, requested: String?): SheetTarget {
+        val workbook = DocumentSupport.readZipEntryText(file, "xl/workbook.xml")
+            ?: return SheetTarget.Failure("Внутренний документ xl/workbook.xml не найден.")
+        val names = DocumentSupport.xlsxSheetNames(workbook)
+        if (names.isEmpty()) return SheetTarget.Failure("В книге не найдено ни одного листа.")
+        val index = resolveSheetIndex(names, requested)
+            ?: return SheetTarget.Failure(
+                "Лист «$requested» не найден. Доступные листы: ${names.joinToString(", ")}."
+            )
+        val entry = xlsxSheetEntry(file, workbook, index)
+            ?: return SheetTarget.Failure("Не найден XML листа «${names[index]}».")
+        val xml = DocumentSupport.readZipEntryText(file, entry)
+            ?: return SheetTarget.Failure("Не удалось прочитать XML листа ($entry).")
+        return SheetTarget.Ok(names = names, index = index, entry = entry, xml = xml)
+    }
+
     /** 1-based numeric or case-insensitive named sheet selection; `null` → the first entry. */
     fun resolveSheetIndex(names: List<String>, requested: String?): Int? {
         if (names.isEmpty()) return null

@@ -60,21 +60,14 @@ internal class XlsxSetCellToolHandler(
                 )
             }
 
-            val workbook = DocumentSupport.readZipEntryText(file, "xl/workbook.xml")
-                ?: return ToolResult(false, "Внутренний документ xl/workbook.xml не найден.")
-            val names = DocumentSupport.xlsxSheetNames(workbook)
-            if (names.isEmpty()) {
-                return ToolResult(false, "В книге не найдено ни одного листа.")
+            val target = when (val resolved = inspector.resolveSheetTarget(file, sheet)) {
+                is SheetTarget.Failure -> return ToolResult(false, resolved.message)
+                is SheetTarget.Ok -> resolved
             }
-            val index = inspector.resolveSheetIndex(names, sheet)
-                ?: return ToolResult(
-                    false,
-                    "Лист «$sheet» не найден. Доступные листы: ${names.joinToString(", ")}."
-                )
-            val entry = inspector.xlsxSheetEntry(file, workbook, index)
-                ?: return ToolResult(false, "Не найден XML листа «${names[index]}».")
-            val xml = DocumentSupport.readZipEntryText(file, entry)
-                ?: return ToolResult(false, "Не удалось прочитать XML листа ($entry).")
+            val names = target.names
+            val index = target.index
+            val entry = target.entry
+            val xml = target.xml
 
             val updated = try {
                 DocumentWriter.setXlsxCell(xml, cellRef, value)
