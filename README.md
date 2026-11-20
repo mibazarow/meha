@@ -214,6 +214,10 @@ Kotlin 2.0 · Jetpack Compose · Hilt · Room (SQLCipher) · OkHttp · WorkManag
 Tesseract · llama.cpp / whisper (нативные библиотеки, arm64-v8a).
 `minSdk 31`, `targetSdk`/`compileSdk` 35.
 
+Комментарии в коде ссылаются на внутренние проектные заметки (`update.md`, `BUGS.md`, `SPEC.md`):
+они велись во время разработки и в публичный репозиторий не входят. Ссылка нужна как след
+происхождения решения — сам текст комментария всегда самодостаточен.
+
 - [UPDATER.md](UPDATER.md) — сборка и раскатка релизов
 - [GITHUB_PUBLISH.md](GITHUB_PUBLISH.md) — публикация релизов через GitHub Releases
 - [keystore.md](keystore.md) — подпись и сервер обновлений

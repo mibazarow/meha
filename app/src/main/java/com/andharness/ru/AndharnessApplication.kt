@@ -333,19 +333,17 @@ class AndharnessApplication : Application() {
         // models are NOT touched. The flag is set AFTER the attempt so a transient failure does not
         // retry forever. `Context.getFilesDir()` —
         // https://developer.android.com/reference/android/content/Context#getFilesDir()
-        applicationScope.launch {
-            if (localModelCleanupPreferences.isCleanupDone()) return@launch
-            runCatching {
-                val filesDir = filesDir
-                val modelsDir = File(filesDir, LocalModelLeftoverCleaner.MODELS_DIR)
-                val removed = LocalModelLeftoverCleaner.clean(
-                    filesDir = filesDir,
-                    modelsDir = modelsDir,
-                    delete = { it.deleteRecursively() },
-                )
-                localModelCleanupPreferences.setCleanupDone()
-                Log.i(TAG, "Reclaimed $removed orphaned local-model path(s)")
-            }.onFailure { Log.w(TAG, "Local-model orphan cleanup failed: ${it.message}") }
+        launchBestEffort("Local-model orphan cleanup") {
+            if (localModelCleanupPreferences.isCleanupDone()) return@launchBestEffort
+            val filesDir = filesDir
+            val modelsDir = File(filesDir, LocalModelLeftoverCleaner.MODELS_DIR)
+            val removed = LocalModelLeftoverCleaner.clean(
+                filesDir = filesDir,
+                modelsDir = modelsDir,
+                delete = { it.deleteRecursively() },
+            )
+            localModelCleanupPreferences.setCleanupDone()
+            Log.i(TAG, "Reclaimed $removed orphaned local-model path(s)")
         }
         // Offline queue (§2): an action queued before a process restart would otherwise wait for the
         // next enqueue. Re-arm the connected-only drain worker whenever the queue already has items.
@@ -359,12 +357,9 @@ class AndharnessApplication : Application() {
         // Startup reconciliation: a live stream cannot cross a process restart, so any persisted
         // `isStreaming=1` row is stale and must be reset (otherwise a finished message keeps showing
         // a streaming cursor / a "stop" affordance on the next open).
-        applicationScope.launch {
-            runCatching { chatRepository.clearStaleStreaming() }
-                .onSuccess {
-                    if (it > 0) Log.i(TAG, "Cleared $it stale isStreaming row(s) at startup")
-                }
-                .onFailure { Log.w(TAG, "clearStaleStreaming failed: ${it.message}") }
+        launchBestEffort("clearStaleStreaming") {
+            val cleared = chatRepository.clearStaleStreaming()
+            if (cleared > 0) Log.i(TAG, "Cleared $cleared stale isStreaming row(s) at startup")
         }
         // Home-screen widget freshness: `provideGlance` is not restarted by `updateAll`, so the widget
         // composition observes `observeChats()` itself while its session is alive, and this loop wakes
@@ -386,58 +381,40 @@ class AndharnessApplication : Application() {
         // Startup backfill: memories stored before the linker existed (or before a person became
         // known) have no `memory_persons` edges yet; link a bounded batch so graph recall can find
         // them. Fire-and-forget and best-effort — it must never block or break startup.
-        applicationScope.launch {
-            runCatching { memoryPersonRepository.linkMissing(MEMORY_PERSON_BACKFILL_BATCH) }
-                .onSuccess {
-                    if (it > 0) Log.i(TAG, "Backfilled $it memory↔person link(s) at startup")
-                }
-                .onFailure { Log.w(TAG, "memoryPersonRepository.linkMissing failed: ${it.message}") }
+        launchBestEffort("memoryPersonRepository.linkMissing") {
+            val linked = memoryPersonRepository.linkMissing(MEMORY_PERSON_BACKFILL_BATCH)
+            if (linked > 0) Log.i(TAG, "Backfilled $linked memory↔person link(s) at startup")
         }
         // Startup backfill: memories stored before the generic entity extractor existed have no
         // `entities` / `memory_entities` edges yet; link a bounded batch so graph recall can reach
         // them by topic/project/place. Fire-and-forget and best-effort — never blocks startup.
-        applicationScope.launch {
-            runCatching { memoryEntityRepository.linkMissing(MEMORY_ENTITY_BACKFILL_BATCH) }
-                .onSuccess {
-                    if (it > 0) Log.i(TAG, "Backfilled $it memory↔entity link(s) at startup")
-                }
-                .onFailure { Log.w(TAG, "memoryEntityRepository.linkMissing failed: ${it.message}") }
+        launchBestEffort("memoryEntityRepository.linkMissing") {
+            val linked = memoryEntityRepository.linkMissing(MEMORY_ENTITY_BACKFILL_BATCH)
+            if (linked > 0) Log.i(TAG, "Backfilled $linked memory↔entity link(s) at startup")
         }
         // Startup catch-up: a scheduled task/reminder whose due time passed while the process was not
         // alive (device off/dozing, dropped WorkManager delivery) must not be silently lost. Fire the
         // bounded batch now, reusing the existing scheduler/worker. Best-effort — it must never block
         // or break startup.
-        applicationScope.launch {
-            runCatching { scheduleCatchUp.reconcile() }
-                .onSuccess {
-                    if (it > 0) Log.i(TAG, "Caught up $it missed scheduled run(s) at startup")
-                }
-                .onFailure { Log.w(TAG, "scheduleCatchUp.reconcile failed: ${it.message}") }
+        launchBestEffort("scheduleCatchUp.reconcile") {
+            val caughtUp = scheduleCatchUp.reconcile()
+            if (caughtUp > 0) Log.i(TAG, "Caught up $caughtUp missed scheduled run(s) at startup")
         }
         // Bounded retention for the append-only tool-call audit log: every tool dispatch appends a
         // row, so without a prune the table would grow forever. Enforced once at startup on the IO
         // scope; both deletes are indexed and cheap. Best-effort — must never block or break startup.
-        applicationScope.launch {
-            runCatching { toolAuditRepository.prune() }
-                .onFailure { Log.w(TAG, "Pruning the tool audit log failed: ${it.message}") }
-        }
+        launchBestEffort("Pruning the tool audit log") { toolAuditRepository.prune() }
         // Idle-skill GC: a skill that has not been successfully run for more than 20 days
         // (SkillGcPolicy.MAX_IDLE_MS) is dead weight, so it is deleted here, once per app start.
         // Fire-and-forget and best-effort — an empty library deletes nothing, and a failed GC must
         // never block or break startup.
-        applicationScope.launch {
-            runCatching { SkillGcRunner(skillStore).run() }
-                .onSuccess {
-                    if (it > 0) Log.i(TAG, "Skill GC deleted $it idle skill(s) (unused > 20 days)")
-                }
-                .onFailure { Log.w(TAG, "Skill GC failed: ${it.message}") }
+        launchBestEffort("Skill GC") {
+            val deleted = SkillGcRunner(skillStore).run()
+            if (deleted > 0) Log.i(TAG, "Skill GC deleted $deleted idle skill(s) (unused > 20 days)")
         }
         // Startup update check. Best-effort and cached for 12h, so at most one manifest fetch per
         // half-day. `check()` never throws and never blocks `onCreate`; a failed check is logged only.
-        applicationScope.launch {
-            runCatching { inAppUpdater.check() }
-                .onFailure { Log.w(TAG, "Update check failed: ${it.message}") }
-        }
+        launchBestEffort("Update check") { inAppUpdater.check() }
         // Warm-up: with semantic search on by default the first recall would otherwise pay the
         // ~29 MB model load on the hot path. Fire-and-forget on the IO scope, skipped entirely when
         // the user has switched semantic search off. Never throws and never blocks `onCreate`.
@@ -465,6 +442,17 @@ class AndharnessApplication : Application() {
                     }
                     .onFailure { Log.w(TAG, "chatMessageVectorIndexer.backfill failed: ${it.message}") }
             }
+        }
+    }
+
+    /**
+     * Runs [block] on the IO scope, logging `<label> failed: <reason>` if it throws. Startup
+     * maintenance must never block `onCreate` or break it, so every step goes through here.
+     */
+    private fun launchBestEffort(label: String, block: suspend () -> Unit) {
+        applicationScope.launch {
+            runCatching { block() }
+                .onFailure { Log.w(TAG, "$label failed: ${it.message}") }
         }
     }
 
